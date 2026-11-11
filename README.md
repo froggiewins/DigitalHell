@@ -4,6 +4,10 @@ A first-person horror game in an endless, procedurally generated modern house. F
 
 Play it by opening `index.html` in a browser, or host it with GitHub Pages (Settings → Pages → Deploy from branch → `main` / root).
 
-**Controls:** WASD to walk · Shift to run · Z to crouch · Space to hop · F for flashlight · E to open doors, read notes and hide · M for the map · J for the journal · P for photo mode · Esc to pause.
+**Modes:** Single player, or online co-op for up to 4 players (host a game, join with a 5-letter code, or pick an open game). In co-op you share the house, keys, doors and front door, but each player gets their own monsters. Co-op uses Supabase Realtime, so it needs the game hosted on a real website (e.g. GitHub Pages).
+
+**Avatar:** Customise your character's hair, headwear, top, glasses, extras and colours from the title screen.
+
+**Controls:** WASD to walk · Shift to run · Z to crouch · Space to hop · F for flashlight · E to open doors, read notes and hide · M for the map · J for the journal · P for photo mode · G to wave · T to chat (co-op) · Esc to pause.
 
 ⚠ Contains jump scares, flashing and loud sounds.

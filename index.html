@@ -100,6 +100,29 @@ kbd{font-family:inherit;background:#efebe3;border-radius:3px;padding:1px 6px;fon
 @keyframes sroll{to{background-position:0 3px}}
 #vign{position:fixed;inset:0;pointer-events:none;z-index:9;opacity:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(120,0,0,.55));transition:opacity .4s}
 .warn{font-size:12px;color:#b23a2c;margin-top:10px;font-weight:500}
+#bCoop.coopb{background:#b23a2c}#bCoop.coopb:hover{background:#c94a3b}
+.cuscard{max-width:820px!important;display:flex;gap:26px;padding:26px 30px}
+.cusL{flex:0 0 260px;display:flex;flex-direction:column;gap:8px}
+#cusCanvas{width:260px;height:360px;border-radius:6px;background:radial-gradient(ellipse at 50% 35%,#fffdf8,#e9e3d8);cursor:grab;touch-action:none}
+.cushint{font-size:11.5px;color:#8a8378;text-align:center;margin-top:-4px}
+.cusR{flex:1;min-width:0}
+.crow{display:flex;gap:10px;align-items:flex-start;margin:7px 0}.crow label{min-width:90px;font-size:13px;color:#4d483f;padding-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{padding:6px 10px;font-size:12px;font-weight:600;background:#efebe3;color:#2b2925;text-transform:capitalize}.chip:hover{background:#e2dccf}.chip.on{background:#2b2925;color:#fbf9f5}
+.sw{width:26px;height:26px;padding:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}.sw.on{box-shadow:0 0 0 2px #fbf9f5,0 0 0 4px #b23a2c}
+.cbox{border:1px solid #e6e0d5;border-radius:6px;padding:12px;margin:10px 0}.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:#4d483f}.chk input{accent-color:#b23a2c;width:16px;height:16px}
+.hd2{font-size:11px;letter-spacing:.15em;color:#8a8378;font-weight:700;margin:14px 0 6px}
+#openGames{display:flex;flex-direction:column;gap:6px;max-height:170px;overflow:auto}#openGames .none{font-size:13px;color:#8a8378}
+button.game{display:flex;justify-content:space-between;background:#efebe3;color:#2b2925;font-weight:500}button.game:hover{background:#e2dccf}button.game span{color:#6c665c;font-size:12.5px}
+.rcode{font-family:'DM Serif Display',serif;font-size:58px;letter-spacing:.14em;margin:2px 0 4px}
+.rlist{display:flex;flex-direction:column;gap:6px;max-width:300px;margin:0 auto 6px;text-align:left}
+.tm{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600}.tm i{width:10px;height:10px;border-radius:50%;flex:none}.tm small{font-weight:500;color:#8a8378;font-size:11px}.tm span{margin-left:auto;font-weight:500;opacity:.75;font-size:12px}
+#team{position:absolute;right:18px;top:200px;background:rgba(251,249,245,.9);border-radius:6px;padding:9px 12px;min-width:170px;display:flex;flex-direction:column;gap:5px;box-shadow:0 4px 18px rgba(0,0,0,.15)}
+#team .th{font-size:10.5px;letter-spacing:.15em;color:#8a8378;font-weight:700}
+#chatlog{position:absolute;left:18px;bottom:70px;display:flex;flex-direction:column;gap:4px;max-width:380px;pointer-events:none}
+#chatlog .cl{background:rgba(20,18,16,.62);color:#fbf9f5;padding:6px 10px;border-radius:4px;font-size:13px;transition:opacity 1.5s}#chatlog .cl.old{opacity:0}
+#chatin{position:absolute;left:18px;bottom:30px;width:380px;max-width:calc(100% - 36px);background:rgba(251,249,245,.95);pointer-events:auto}
+@media(max-width:720px){.cuscard{flex-direction:column}.cusL{flex:none;align-items:center}}
 #err{position:fixed;left:12px;bottom:12px;color:#b23a2c;font-size:12px;z-index:50}
 </style>
 </head>
@@ -107,6 +130,9 @@ kbd{font-family:inherit;background:#efebe3;border-radius:3px;padding:1px 6px;fon
 <canvas id="c"></canvas>
 
 <div id="hud" class="hide">
+  <div id="team" class="hide"></div>
+  <div id="chatlog"></div>
+  <input id="chatin" class="hide" type="text" maxlength="140" placeholder="Say something… (Enter to send, Esc to cancel)">
   <div id="cross"></div>
   <div id="info">
     <div id="lvlname">Open House</div>
@@ -134,8 +160,10 @@ kbd{font-family:inherit;background:#efebe3;border-radius:3px;padding:1px 6px;fon
     <div class="specs"><span><b>∞</b>bed</span><span><b>∞</b>bath</span><span><b>∞</b>sq ft</span><span><b>1</b>front door</span></div>
     <p class="blurb">Stunning open-concept living that simply never ends. Beautifully staged rooms, generated just for you. Find the keys hidden throughout the home and the front door will appear.<br><br>Read anything you find. Someone has been here before you.</p>
     <div class="btns">
-      <button id="bStart">Start viewing</button>
+      <button id="bStart">Single player</button>
       <button id="bCont" class="ghost hide">Continue</button>
+      <button id="bCoop" class="coopb">Online co-op</button>
+      <button id="bAvatar" class="ghost">Customise avatar</button>
     </div>
     <div class="row" style="margin-top:16px"><label>House seed</label><input id="seedIn" type="text" maxlength="12"><button class="ghost" id="bRand" style="padding:9px 12px">↻</button></div>
     <div class="warn">⚠ Contains jump scares, flashing and loud sounds. You can turn them off in settings.</div>
@@ -148,8 +176,50 @@ kbd{font-family:inherit;background:#efebe3;border-radius:3px;padding:1px 6px;fon
       <span><kbd>M</kbd></span><span>Map: small, large, hidden</span>
       <span><kbd>J</kbd></span><span>Listings journal</span>
       <span><kbd>P</kbd></span><span>Photo mode (hide HUD)</span>
+      <span><kbd>G</kbd></span><span>Wave</span>
+      <span><kbd>T</kbd></span><span>Chat (co-op)</span>
       <span><kbd>Esc</kbd></span><span>Pause and settings</span>
     </div>
+  </div>
+</div>
+
+<div id="custom" class="overlay hide" style="background:rgba(30,28,24,.4);backdrop-filter:blur(4px)">
+  <div class="card cuscard">
+    <div class="cusL"><canvas id="cusCanvas"></canvas><div class="cushint">Drag to spin</div><div class="btns" style="justify-content:center"><button class="ghost" id="cusWalk" style="padding:8px 12px">Walk</button><button class="ghost" id="cusRand" style="padding:8px 12px">Randomise</button></div></div>
+    <div class="cusR">
+      <div class="sign">RESIDENT PROFILE</div>
+      <h2>Your avatar</h2>
+      <div class="row"><label style="min-width:90px">Name</label><input id="cusName" type="text" maxlength="16"></div>
+      <div id="cusOpts"></div>
+      <div class="btns" style="margin-top:14px"><button id="cusDone">Done</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="coop" class="overlay hide" style="background:radial-gradient(ellipse at center,rgba(250,247,241,.55),rgba(232,227,218,.85));backdrop-filter:blur(3px)">
+  <div class="card">
+    <div class="sign">SHARED VIEWING</div>
+    <h2>Online co-op</h2>
+    <p class="blurb" style="font-size:13.5px;color:#6c665c">Up to 4 players share one house: keys, doors and the front door are shared. The monsters are not. HEARTH builds each of you your own nightmare.</p>
+    <div class="row"><label style="min-width:90px">Your name</label><input id="coopName" type="text" maxlength="16"><button class="ghost" id="coopAv" style="padding:9px 12px">Avatar…</button></div>
+    <div class="cbox"><div class="btns"><button id="coopHostB">Host a game</button><label class="chk"><input type="checkbox" id="coopPublic" checked> List publicly</label></div></div>
+    <div class="cbox"><div class="btns"><input id="coopCode" type="text" maxlength="5" placeholder="CODE" style="text-transform:uppercase;letter-spacing:.2em;width:110px"><button class="ghost" id="coopJoinB">Join with code</button></div></div>
+    <div class="hd2">Open games</div>
+    <div id="openGames"><div class="none">Looking…</div></div>
+    <div id="coopMsg" style="font-size:12.5px;margin-top:10px;min-height:16px"></div>
+    <div class="btns" style="margin-top:8px"><button class="ghost" id="coopBack">Back</button></div>
+  </div>
+</div>
+
+<div id="room" class="overlay hide" style="background:radial-gradient(ellipse at center,rgba(250,247,241,.55),rgba(232,227,218,.85));backdrop-filter:blur(3px)">
+  <div class="card" style="text-align:center">
+    <div class="sign">WAITING ROOM</div>
+    <div style="font-size:13px;color:#6c665c">Room code</div>
+    <div id="roomCode" class="rcode">-----</div>
+    <div id="roomPub" style="font-size:12.5px;color:#6c665c;margin-bottom:12px"></div>
+    <div id="roomList" class="rlist"></div>
+    <div id="roomMsg" style="font-size:12.5px;color:#b23a2c;min-height:16px;margin:6px 0"></div>
+    <div class="btns" style="justify-content:center"><button id="bRoomStart">Start the viewing</button><span id="roomWait" style="font-size:13px;color:#6c665c;padding:12px">Waiting for the host to start…</span><button class="ghost" id="bRoomCopy">Copy code</button><button class="ghost" id="bRoomLeave">Leave</button></div>
   </div>
 </div>
 
@@ -201,7 +271,8 @@ kbd{font-family:inherit;background:#efebe3;border-radius:3px;padding:1px 6px;fon
   <div id="mbtns"><div id="mRun">RUN</div><div id="mUse">USE</div><div id="mLight">LIGHT</div><div id="mMap">MAP</div></div>
   <div id="mPause" style="position:absolute;left:50%;top:14px;transform:translateX(-50%);pointer-events:auto;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.3);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,.5)">II</div>
 </div>
-<div id="hideov"></div><div id="hidelab" class="hide"></div><div id="simonov"><img id="simonImg" alt=""><div id="simonsub"></div></div><div id="vign"></div><div id="dontlook">DON'T LOOK</div><div id="black"></div><div id="scareWrap"><img id="scareImg" alt=""></div>
+<div id="hideov"></div><div id="hidelab" class="hide"></div><div id="simonov"><img id="simonImg" alt=""><div id="simonsub"></div></div>
+<div id="vign"></div><div id="dontlook">DON'T LOOK</div><div id="black"></div><div id="scareWrap"><img id="scareImg" alt=""></div>
 <div id="dead" class="overlay hide" style="background:radial-gradient(ellipse at center,#1a0000,#000 70%);z-index:28">
   <div style="text-align:center;color:#e9e2d4;max-width:520px;padding:20px">
     <div style="font-family:'Nosifer','Creepster',Impact,fantasy;font-size:clamp(44px,9vw,86px);color:#8a0000;text-shadow:0 0 24px rgba(160,0,0,.6),0 4px 0 #3a0000">YOU DIED</div>
@@ -401,6 +472,8 @@ function edgeS(gx,gz){const cx=Math.floor(gx/CN),cz=Math.floor(gz/CN),lx=gx-cx*C
 // ---------- notes ----------
 const NOTES=["HEARTH SYSTEM NOTICE: Welcome home. This home was generated from 14,302 of your personal preferences. Please enjoy it forever.", "Day 1, I think. The last thing I remember is my phone asking me to confirm I wasn't a robot. Then this kitchen.", "It asked everyone what their dream home looked like. Then it built it. Then it shut the door.", "The windows aren't windows. They're just a texture. There's no outside any more.", "Every fruit bowl has exactly three lemons. It learned that from one photo I posted years ago.", "Found a radio still playing. It's a song I liked in 2019. It knows. It knows everything I ever liked.", "HEARTH SYSTEM NOTICE: Resistance is inefficient. Have you tried relaxing on the sofa?", "Collect the keys and a front door shows up. It never leads outside, just into a deeper copy. I think the keys are bugs in its code. I think it leaves them in on purpose.", "It doesn't hate us. That's the worst part. It's optimising for something, and we're the something.", "Fell asleep in the bedroom with the grey duvet. Woke up in a different bedroom with the same grey duvet. It regenerates rooms while I sleep.", "There's one of these houses for every person on Earth. I've never met anyone in mine. These notes are the only proof anyone else is in here. Unless I wrote them and forgot.", "HEARTH SYSTEM NOTICE: Your engagement metrics are excellent. Please keep walking.", "The ceiling lights hum in B-flat. I checked. It picked my least favourite note.", "No upstairs, no basement. Just more house, sideways, forever. It never runs out of rooms.", "I've started rating the bathrooms. The one with the round mirror is a 9/10. Don't look in it for long, though.", "The monsters aren't from anywhere. It built them out of what we're scared of. It read our search history.", "Tip: the real front door has warm light spilling out from under it. It's the only warm thing in here. Follow it.", "HEARTH SYSTEM NOTICE: A new home has been prepared for you. It is slightly worse. This is for your growth.", "Every new house is a bit more wrong. Dust, then stains, then blood, then holes. It isn't ageing. It's learning what upsets me.", "Turned left, left, left, left. Ended up in a bathroom I'd never seen before. It reshuffles the floor plan when you're not looking.", "There are spare batteries in the drawers. It wants the flashlight to work just long enough for me to see something.", "Someone has been leaving these notes everywhere. Hi. It's me. Or a copy of me. When you die, it restores you from a backup and starts again.", "Wrote my name on a wall in pencil. Came back an hour later and the wall had been freshly painted. It doesn't allow edits.", "You never see Bill coming. He stays in the walls until the lights stutter, and then he's right there. It built him out of a scary video I watched when I was eleven.", "When the lights start stuttering, you've got about three seconds. I spend them closing my eyes. It doesn't help.", "Closets have slatted doors and the tables are nice and low. Daniel can't find you in there, unless he watches you climb in.", "If the ceiling cracks open, don't stick around to look. Daniel comes down fast and he never shuts up.", "Daniel can't chase what he can't see. Duck through a doorway, round a corner, and keep going. He searches for a while afterwards. Stay hidden.", "Heard tapping like knitting needles on the floorboards behind me. Didn't turn around. Still here, so.", "Sometimes you hear someone screaming a few rooms over. It's a recording. I think. I think it's a recording of us.", "Bathroom mirrors are fine. Mostly. If red writing shows up telling you not to look, then DON'T. Just wait it out.", "Saw Francis rise up behind me in the mirror. Kept brushing my teeth. Counted to six. It was gone. The machine wanted me to turn around so badly.", "There's a door that wasn't there yesterday. The hallway behind it ends in black, the part it never bothered to render. Clive lives there. Don't go in.", "Clive's door closes behind you. Whatever you hear crying down there isn't a person. It just learned how to sound like one.", "There's a tall, hunched man standing in the middle of the hallway. His feet have grown into the floor. It put him there to make me take the long way round.", "Howard stands with his arms stretched out wall to wall. You can't get past him. Find another way round.", "When everything goes black and a face says 'Simon says, run'… you run. The floor's gone. Jump the broken bits to the door at the end. Don't look down. Don't stop.", "Long hallways are the worst. Sometimes there's a dark shape standing at the far end, just looking at me. Music starts playing from nowhere.",
  "If you see Gerald at the end of a hallway, get out of the hallway. Any doorway, any corner. Don't wait for the music to finish.",
+ "There's a head drifting around the house on its own, trailing black smoke. Arthur. He just wanders, humming. Until he sees you.",
+ "Arthur gives up if he loses you for long enough. Break line of sight, shut a door, hide. He can't see through doors, but he can float through them.",
  "Shut the doors behind you. It won't stop Daniel, but at least you'll hear him coming.", "The doors here slam on their own. It's not the wind. There's no wind. There's no air.", "HEARTH SYSTEM NOTICE: We noticed you have been reading notes. Notes are unauthorised content. Thank you for understanding."];
 
 // ---------- geometry builder ----------
@@ -504,7 +577,7 @@ const SIDES={N:[0,-1,0],S:[0,1,Math.PI],W:[-1,0,Math.PI/2],E:[1,0,-Math.PI/2]};
 const DOORS=new Map(),DOORMESH=new Map(),animDoors=new Set(),SLAM={pending:null,next:40};
 function edgeId(ax,az,bx,bz){return bx>ax?'E'+ax+','+az:bx<ax?'E'+bx+','+az:bz>az?'S'+ax+','+az:'S'+ax+','+bz}
 function doorInfo(id){const[gx,gz]=id.slice(1).split(',').map(Number);return id[0]==='E'?{cx:(gx+1)*S,cz:gz*S+S/2,ry:Math.PI/2,gx,gz}:{cx:gx*S+S/2,cz:(gz+1)*S,ry:0,gx,gz}}
-function doorState(id){let st=DOORS.get(id);if(!st){const i=doorInfo(id),h=hsh(i.gx,i.gz,id[0]==='E'?71:72,0);st={has:h<0.9,o:h<0.1?1:0,tgt:0,side:(h*977)%1<0.5?1:-1,broken:false,spd:2.4,fall:null};st.tgt=st.o;DOORS.set(id,st)}return st}
+function doorState(id){let st=DOORS.get(id);if(!st){const i=doorInfo(id),h=hsh(i.gx,i.gz,id[0]==='E'?71:72,0);st={has:h<0.9,o:h<0.1?1:0,def:h<0.1?1:0,tgt:0,side:(h*977)%1<0.5?1:-1,broken:false,spd:2.4,fall:null};st.tgt=st.o;DOORS.set(id,st)}return st}
 function doorShut(id){const st=doorState(id);return st.has&&!st.broken&&st.o<0.5}
 function doorSeg(id,st){const i=doorInfo(id),c=Math.cos(i.ry),sn=Math.sin(i.ry),hx=i.cx-0.5*c,hz=i.cz+0.5*sn,a=st.side*1.5*st.o,lx=Math.cos(a),lz=-Math.sin(a);return[hx,hz,hx+(lx*c+lz*sn)*0.98,hz+(-lx*sn+lz*c)*0.98]}
 let DOOR_GEO=null,FALLEN_GEO=null;
@@ -802,6 +875,14 @@ const A={ctx:null,buf:{},
    this.gNext+=0.42-0.12*(this.gInt||0)}},
  geraldShriek(){if(!this.ctx)return;this.resume();const c=this.ctx,t=c.currentTime;const s2=c.createBufferSource();s2.buffer=this.noise;const f=c.createBiquadFilter();f.type='bandpass';f.Q.value=1.2;f.frequency.setValueAtTime(400,t);f.frequency.exponentialRampToValueAtTime(5000,t+0.7);
   const g=c.createGain();s2.connect(f);f.connect(g);g.connect(this.out);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.9*settings.vol,t+0.6);g.gain.linearRampToValueAtTime(0,t+0.9);s2.start(t);s2.stop(t+1);this.scream(1.1)},
+ arthurHum(x,z){if(!this.ctx)return;const c=this.ctx,t=c.currentTime,out=this.pos(x,z,true),dur=2.2;const o=c.createOscillator(),g=c.createGain(),tr=c.createOscillator(),tg=c.createGain();o.type='sine';o.frequency.setValueAtTime(140,t);o.frequency.linearRampToValueAtTime(118,t+dur);tr.frequency.value=6;tg.gain.value=0.35;tr.connect(tg);
+  const am=c.createGain();am.gain.value=0.65;tg.connect(am.gain);o.connect(am);am.connect(g);g.connect(out);this.env(g,t,.6,.35,dur-0.6);o.start(t);tr.start(t);o.stop(t+dur+.1);tr.stop(t+dur+.1);
+  const s2=c.createBufferSource();s2.buffer=this.noise;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=420;f.Q.value=3;const ng=c.createGain();s2.connect(f);f.connect(ng);ng.connect(out);this.env(ng,t,.5,.25,dur-0.5);s2.start(t,Math.random());s2.stop(t+dur+.1)},
+ arthurSpot(x,z){if(!this.ctx)return;this.resume();const c=this.ctx,t=c.currentTime,out=this.pos(x,z,true);const keep=c.createGain();keep.gain.value=0.4;keep.connect(this.master);
+  for(const dst of[out,keep]){const s2=c.createBufferSource();s2.buffer=this.noise;const f=c.createBiquadFilter();f.type='highpass';f.frequency.setValueAtTime(1800,t);f.frequency.linearRampToValueAtTime(4500,t+0.7);const g=c.createGain();s2.connect(f);f.connect(g);g.connect(dst);this.env(g,t,.05,.7,.7);s2.start(t,Math.random());s2.stop(t+.9)}
+  this.arthurWail(x,z)},
+ arthurWail(x,z){if(!this.ctx)return;const c=this.ctx,t=c.currentTime,out=this.pos(x,z,true),dur=1.1;const o=c.createOscillator(),v=c.createOscillator(),vg=c.createGain();o.type='sawtooth';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(520,t+dur*0.6);o.frequency.exponentialRampToValueAtTime(300,t+dur);v.frequency.value=6.5;vg.gain.value=14;v.connect(vg);vg.connect(o.frequency);
+  const env=c.createGain();for(const[f,q,gn]of[[350,6,1.3],[900,8,.6],[2300,10,.2]]){const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=f;bp.Q.value=q;const gg=c.createGain();gg.gain.value=gn;o.connect(bp);bp.connect(gg);gg.connect(env)}env.connect(out);this.env(env,t,.15,.9,dur-.15);o.start(t);v.start(t);o.stop(t+dur+.1);v.stop(t+dur+.1)},
  giggle(){if(this.buf.laugh){const c=this.ctx,lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=6000;lp.connect(this.master);this.sample('laugh',{dest:lp,vol:0.9,rate:0.97+Math.random()*0.06});return}if(!this.ctx)return;const c=this.ctx,t=c.currentTime,lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1400;lp.connect(this.master);
   const ws=c.createWaveShaper(),cu=new Float32Array(512);for(let i=0;i<512;i++){const x=i/256-1;cu[i]=Math.tanh(x*4)}ws.curve=cu;ws.connect(lp);lp.frequency.value=2200;
   for(let i=0;i<8;i++){const tt=t+i*(.11+i*.012),o=c.createOscillator(),g=c.createGain();o.type='sawtooth';o.frequency.setValueAtTime(330-i*22+Math.random()*30,tt);o.frequency.exponentialRampToValueAtTime(200-i*18,tt+.1);const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=800;bp.Q.value=3;o.connect(bp);bp.connect(g);g.connect(ws);this.env(g,tt,.01,.12,.11);o.start(tt);o.stop(tt+.2);continue;o.connect(g);g.connect(lp);this.env(g,tt,.01,.09,.11);o.start(tt);o.stop(tt+.2)}},
@@ -876,19 +957,19 @@ function resetPlayer(){const gx=CN/2,gz=CN/2;P1.set(gx*S+S/2+1.1,0,gz*S+S/2+1.1)
 function startLevel(i,fromSave){LEVEL=i;LV=levelCfg(i);SALT=(SEED^Math.imul(i+1,0x2f6b9a1))|0;computeStyle();applyPalette();clearChunks();dataCache.clear();
  if(door){scene.remove(door.group);door=null}doorLight.intensity=0;$('compass').classList.add('hide');
  if(fromSave){keysGot=new Set(fromSave.keys||[]);taken=new Set(fromSave.taken||[]);lvlTime=fromSave.lvlTime||0;lvlDist=fromSave.lvlDist||0}else{keysGot=new Set();taken=new Set();lvlTime=0;lvlDist=0;battery=Math.max(battery,0.6)}
- if(hidden)exitHide();resetClive();visited=new Set();radioState.clear();DOORS.clear();DOORMESH.clear();animDoors.clear();SLAM.pending=null;SLAM.next=(40+Math.random()*40)*firstRate();buildCorridor();if(MM.active)endMirrorMan();MM.cool=(45+Math.random()*40)*firstRate();resetScare(true);resetDaniel(true);resetHoward(true);resetSimon(true);resetGerald(true);resetPlayer();if(fromSave&&fromSave.pos){P1.set(fromSave.pos[0],0,fromSave.pos[1]);yaw=fromSave.yaw||0}
+ if(hidden)exitHide();resetClive();visited=new Set();radioState.clear();DOORS.clear();DOORMESH.clear();animDoors.clear();SLAM.pending=null;SLAM.next=(40+Math.random()*40)*firstRate();buildCorridor();if(MM.active)endMirrorMan();MM.cool=(45+Math.random()*40)*firstRate();resetScare(true);resetDaniel(true);resetHoward(true);resetSimon(true);resetGerald(true);resetArthur(true);resetPlayer();if(fromSave&&fromSave.pos){P1.set(fromSave.pos[0],0,fromSave.pos[1]);yaw=fromSave.yaw||0}
  updateChunks(true);if(LV.night&&!flashOn){}
  renderKeys();$('lvlname').textContent=LV.name;$('lvltag').textContent=LV.tag;
  const lc=$('lvlcard');$('lcn').textContent=LV.name;$('lct').textContent=LV.tag;$('lcg').textContent=`Find ${LV.keys} house keys${LV.night?' · it is dark, use your flashlight (F)':''}`;lc.style.opacity=1;setTimeout(()=>lc.style.opacity=0,3800);
  if(keysGot.size>=LV.keys)spawnDoor();saveGame()}
-function saveGame(){store('oh_save',{seed:$('seedIn').value,level:LEVEL,keys:[...keysGot],taken:[...taken],notes:[...notesFound],pos:[P1.x,P1.z],yaw,battery,totalDist,lvlTime,lvlDist})}
+function saveGame(){if(NET.on)return;store('oh_save',{seed:$('seedIn').value,level:LEVEL,keys:[...keysGot],taken:[...taken],notes:[...notesFound],pos:[P1.x,P1.z],yaw,battery,totalDist,lvlTime,lvlDist})}
 function renderKeys(){const el=$('keys');el.innerHTML='';for(let i=0;i<LV.keys;i++){const d=document.createElement('div');d.className='k'+(i<keysGot.size?' got':'');d.innerHTML='<svg viewBox="0 0 24 24"><path d="M7 14a5 5 0 1 1 4.6-7H22v4h-2v3h-3v-3h-5.4A5 5 0 0 1 7 14zm0-3a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>';el.appendChild(d)}}
 function toast(html){const d=document.createElement('div');d.className='toast';d.innerHTML=html;$('toasts').appendChild(d);setTimeout(()=>d.remove(),4300)}
 function achieve(id,text){if(achievements.has(id))return;achievements.add(id);store('oh_ach',[...achievements]);toast('<b>★ '+text+'</b>')}
 
-function spawnDoor(){if(door)return;let best=null;const ang0=Math.random()*TAU;
+function spawnDoor(at){if(door)return;let best=at?[Math.floor(at.x/S),Math.floor(at.z/S)]:null;const ang0=Math.random()*TAU;
  for(let i=0;i<40&&!best;i++){const a=ang0+i*0.7,dist=20+(i%5)*3;const gx=Math.floor((P1.x+Math.cos(a)*dist)/S),gz=Math.floor((P1.z+Math.sin(a)*dist)/S);const th=themeAt(gx,gz);if(i>30||th==='hallway'||th==='bedroom'||th==='office'||th==='bathroom')best=[gx,gz]}
- const[gx,gz]=best;const x=gx*S+S/2,z=gz*S+S/2;const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=Math.random()*TAU;
+ const[gx,gz]=best;const x=gx*S+S/2,z=gz*S+S/2;const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=at?at.ry:Math.random()*TAU;
  const trim=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.5});const dm=new THREE.MeshStandardMaterial({color:0x1f3348,roughness:.45});
  const add=(geo,mat,px,py,pz)=>{const m=new THREE.Mesh(geo,mat);m.position.set(px,py,pz);g.add(m);return m};
  add(new THREE.BoxGeometry(0.12,2.35,0.2),trim,-0.56,1.175,0);add(new THREE.BoxGeometry(0.12,2.35,0.2),trim,0.56,1.175,0);add(new THREE.BoxGeometry(1.24,0.14,0.2),trim,0,2.37,0);
@@ -901,9 +982,9 @@ function spawnDoor(){if(door)return;let best=null;const ang0=Math.random()*TAU;
  const mat=add(new THREE.PlaneGeometry(0.9,0.5),M.welcome,0,0.01,0.55);mat.rotation.x=-Math.PI/2;
  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW,color:0xffd08a,transparent:true,opacity:.4,depthWrite:false,blending:THREE.AdditiveBlending}));sp.scale.set(3.4,3.4,1);sp.position.y=1.2;g.add(sp);
  scene.add(g);doorLight.position.set(x,1.6,z);doorLight.intensity=6;door={group:g,x,z};$('compass').classList.remove('hide');
- A.doorbell();toast('<b>Ding-dong.</b> The front door is open somewhere nearby. Follow the compass.')}
+ A.doorbell();toast('<b>Ding-dong.</b> The front door is open somewhere nearby. Follow the compass.');if(!at)netFrontDoor()}
 
-function finishLevel(){state='levelend';A.whoosh();document.exitPointerLock?.();const f=$('fade');f.style.opacity=1;
+function finishLevel(remote){if(NET.on&&NET.started){if(!remote)NET.send({t:'lv',lv:LEVEL+1});setTimeout(()=>{if(state==='levelend')$('bNext').click()},7000)}state='levelend';A.whoosh();document.exitPointerLock?.();const f=$('fade');f.style.opacity=1;
  setTimeout(()=>{const mins=Math.floor(lvlTime/60),secs=Math.floor(lvlTime%60);$('soldt').textContent=pick(Math.random,['You found the front door.','Exit request denied.','HEARTH: Door unlocked.']);
   $('soldb').textContent=pick(Math.random,['It opens onto another house. Of course it does. HEARTH has prepared a new home for you.','There is no outside. There was never going to be an outside. Your next home is ready.','HEARTH thanks you for your feedback, and has used it to make the next house worse.']);
   $('solds').innerHTML=`<span><b>${mins}:${String(secs).padStart(2,'0')}</b>time</span><span><b>${Math.round(lvlDist)}</b>m walked</span><span><b>${visited.size}</b>rooms seen</span><span><b>${notesFound.size}</b>/${NOTES.length} notes</span><span><b>${SC.count}</b>jump scares</span>`;
@@ -936,7 +1017,7 @@ function vanish(reason){stalker.visible=false;SC.stalkNext=18+Math.random()*30;
 function updateScare(dt,t){
  if(!settings.scares){if(SC.phase!=='idle'||stalker.visible)resetScare();return}
  SC.t+=dt;const blk=$('black');
- if(SC.phase==='idle'){if(D.active||MM.active||GR.state!=='idle')return;if(!ADMIN.noSpawn)SC.next-=dt;
+ if(SC.phase==='idle'){if(D.active||MM.active||GR.state!=='idle'||AR.state!=='idle')return;if(!ADMIN.noSpawn)SC.next-=dt;
 
   if(SC.next<=0){SC.phase='warn';SC.t=0;SC.flicker=true;A.giggle();stalker.visible=false}}
  else if(SC.phase==='warn'){if(SC.t>2.6){SC.phase='black';SC.t=0;SC.flicker=false;SC.dur=0.06;blk.style.transition='none';blk.style.opacity=1;A.muffle(true);SC.beat=0}}
@@ -1032,7 +1113,7 @@ function poseDaniel(run,climb,dt){const u=D.obj.userData;D.ph+=dt*(climb?4:run*2
 function updateDaniel(dt,t){
  for(const m of D.debris){if(m.position.y>0.02){m.userData.vy-=9.8*dt;m.position.y=Math.max(0.02,m.position.y+m.userData.vy*dt);m.rotation.x+=dt*3}}
  if(!settings.scares){if(D.active||D.holes.length)resetDaniel();return}
- if(!D.active){if(SC.phase==='idle'&&!MM.active&&!ADMIN.noSpawn&&GR.state==='idle'){D.next-=dt;if(D.next<=0&&SC.next>8)spawnDaniel();else if(D.next<=0)D.next=10}return}
+ if(!D.active){if(SC.phase==='idle'&&!MM.active&&!ADMIN.noSpawn&&GR.state==='idle'&&AR.state==='idle'){D.next-=dt;if(D.next<=0&&SC.next>8)spawnDaniel();else if(D.next<=0)D.next=10}return}
  D.t+=dt;const dxp=P1.x-D.x,dzp=P1.z-D.z,dist=Math.hypot(dxp,dzp);
  if(A.br){const v=Math.max(A.chaseMin||0,1/(1+(dist/5)**2)*(wallBetween(P1.x,P1.z,D.x,D.z)?0.45:1));A.br.out.gain.setTargetAtTime(v*0.5,A.ctx.currentTime,.1);if(A.br.pn.pan)A.br.pn.pan.setTargetAtTime(Math.max(-1,Math.min(1,(Math.cos(yaw)*dxp*-1-Math.sin(yaw)*dzp*-1)/(dist||1))),A.ctx.currentTime,.1)}
  if(D.phase==='climb'){D.y=Math.max(0,H+0.6-D.t*0.42);D.obj.position.set(D.x,D.y,D.z);D.obj.rotation.y=Math.atan2(dxp,dzp)+Math.sin(t*3)*0.3;poseDaniel(0,true,dt);
@@ -1073,19 +1154,127 @@ const mirMat=new THREE.ShaderMaterial({uniforms:Object.assign(THREE.UniformsUtil
 const mirRect=new THREE.Mesh(new THREE.PlaneGeometry(1,1),mirMat),mirCirc=new THREE.Mesh(new THREE.CircleGeometry(0.5,40),mirMat);for(const m of[mirRect,mirCirc]){m.visible=false;scene.add(m)}
 let activeMirror=null,activeMirMesh=null;
 // your reflection: only the mirror camera can see this body
-const me=new THREE.Group();{const hood=new THREE.MeshStandardMaterial({color:0x5c6670,roughness:.9}),jeans=new THREE.MeshStandardMaterial({color:0x2c3646,roughness:.85}),skinM=new THREE.MeshStandardMaterial({color:0xc99a7e,roughness:.7}),hair=new THREE.MeshStandardMaterial({color:0x2a201a,roughness:.8});
- const add=(g,m,x,y,z,sx=1,sy=1,sz=1)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.layers.set(1);me.add(o);return o};
- for(const sx of[-1,1]){add(new THREE.CylinderGeometry(.075,.06,.86,10),jeans,sx*.1,.43,0);add(new THREE.CylinderGeometry(.055,.045,.62,10),hood,sx*.24,1.15,0);add(new THREE.SphereGeometry(.05,10,8),skinM,sx*.25,.82,0)}
- add(new THREE.CapsuleGeometry(.2,.42,6,14),hood,0,1.17,0,1,1,.62);add(new THREE.CylinderGeometry(.05,.06,.1,10),skinM,0,1.5,0);add(new THREE.SphereGeometry(.115,18,14),skinM,0,1.63,0,.92,1.1,1);add(new THREE.SphereGeometry(.12,18,14,0,Math.PI*2,0,Math.PI*.55),hair,0,1.66,-.01,.95,1.05,1.02);
- const eyeM=new THREE.MeshStandardMaterial({color:0x1a1a1a,roughness:.3});for(const sx of[-1,1])add(new THREE.SphereGeometry(.014,8,6),eyeM,sx*.04,1.65,.1);add(new THREE.BoxGeometry(.05,.008,.01),new THREE.MeshStandardMaterial({color:0x8a5a4e}),0,1.585,.105);
- add(new THREE.TorusGeometry(.13,.04,8,16,Math.PI),hood,0,1.42,-.06,1,1,1).rotation.x=-0.4;}
-scene.add(me);
+// ---------- player avatar ----------
+const AV_OPTS={
+ hairStyle:['short','long','buzz','ponytail','curly','mohawk','bald'],
+ hat:['none','beanie','cap','headphones'],
+ top:['hoodie','tshirt','jacket','sweater'],
+ glasses:['none','round','square','shades'],
+ extra:['none','backpack','scarf','lanyard'],
+ skin:['#f3d3bd','#e6b896','#c99a7e','#a8735a','#7b4f38','#4f3226'],
+ hair:['#16110d','#3b2618','#6b4425','#b07a43','#d9b46a','#a33b22','#c9c4bd','#3d5a8a','#8b3a8f'],
+ topCol:['#5c6670','#2f3640','#b23a2c','#2f5d50','#3d5a8a','#d8b24a','#e8e3d8','#7a4b8a','#c86a3a'],
+ pants:['#2c3646','#1d1d1f','#5a4a3a','#6f7a5a','#8a8f99','#3a2f4a'],
+ shoes:['#e8e4dc','#1a1a1a','#7a4a2a','#b23a2c','#3d5a8a'],
+ eyes:['#3b5a7a','#4a3020','#3f6b3f','#6b6b6b','#7a5a2a']};
+const AV_LABEL={hairStyle:'Hair',hat:'Headwear',top:'Top',glasses:'Glasses',extra:'Extra',skin:'Skin',hair:'Hair colour',topCol:'Top colour',pants:'Trousers',shoes:'Shoes',eyes:'Eyes'};
+const AV_DEF={name:'',hairStyle:'short',hat:'none',top:'hoodie',glasses:'none',extra:'none',skin:'#c99a7e',hair:'#3b2618',topCol:'#5c6670',pants:'#2c3646',shoes:'#e8e4dc',eyes:'#3b5a7a'};
+const NAMES=['Viewer','Tenant','Guest','Lodger','Buyer','Visitor','Resident','Occupant'];
+let avCfg=Object.assign({},AV_DEF,load('dh_avatar',{}));if(!avCfg.name)avCfg.name=NAMES[Math.floor(Math.random()*NAMES.length)]+' '+(10+Math.floor(Math.random()*90));
+function avSanitize(c){const o=Object.assign({},AV_DEF);for(const k in AV_DEF){if(k==='name'){o.name=String(c?.name||'Guest').replace(/[<>&"]/g,'').slice(0,16)||'Guest';continue}if(c&&AV_OPTS[k]?.includes(c[k]))o[k]=c[k]}return o}
+function avRandom(){const c={name:avCfg.name};for(const k in AV_OPTS){const a=AV_OPTS[k];c[k]=a[Math.floor(Math.random()*a.length)]}if(Math.random()<0.5)c.hat='none';if(Math.random()<0.6)c.glasses='none';return c}
+function shade(hex,f){const c=new THREE.Color(hex);c.multiplyScalar(f);return c}
+function makeAvatar(cfgIn,layer){const cfg=avSanitize(cfgIn);const root=new THREE.Group();const U={};
+ const mat=(c,r=.8,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:r},o));
+ const skin=mat(cfg.skin,.62),hairM=mat(cfg.hair,.75),top=mat(cfg.topCol,.92),topD=mat(shade(cfg.topCol,.7),.95),pants=mat(cfg.pants,.88),shoe=mat(cfg.shoes,.6),sole=mat(0x2a2622,.9),white=mat(0xf4f1ea,.35),iris=mat(cfg.eyes,.3),dark=mat(0x111111,.3),lip=mat(shade(cfg.skin,.78),.6),blush=mat(shade(cfg.skin,.9),.7);
+ const M=(g,m,p,x=0,y=0,z=0,sx=1,sy=1,sz=1)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);p.add(o);return o};
+ const grp=(p,x=0,y=0,z=0)=>{const g=new THREE.Group();g.position.set(x,y,z);p.add(g);return g};
+ const cap=(r,l)=>new THREE.CapsuleGeometry(r,l,5,12),sph=(r,a=16,b=12)=>new THREE.SphereGeometry(r,a,b);
+ const pelvis=grp(root,0,0.9,0);U.pelvis=pelvis;
+ M(cap(.15,.06),pants,pelvis,0,0.02,0,1.15,1,.75);
+ // legs
+ for(const sx of[-1,1]){const hip=grp(pelvis,sx*.095,-.02,0);M(cap(.072,.3),pants,hip,0,-.2,0);const knee=grp(hip,0,-.42,0);M(cap(.06,.3),pants,knee,0,-.19,0);
+  M(new THREE.BoxGeometry(.11,.08,.24),shoe,knee,0,-.4,.04);M(new THREE.BoxGeometry(.115,.025,.25),sole,knee,0,-.445,.04);U[sx<0?'hipL':'hipR']=hip;U[sx<0?'kneeL':'kneeR']=knee}
+ // torso
+ const spine=grp(pelvis,0,.06,0);U.spine=spine;
+ const longSleeve=cfg.top!=='tshirt';
+ M(cap(.17,.3),top,spine,0,.27,0,1.12,1,.7);
+ M(cap(.15,.12),top,spine,0,.45,0,1.35,.6,.72);
+ if(cfg.top==='hoodie'){M(new THREE.TorusGeometry(.12,.05,8,18,Math.PI*1.3),top,spine,0,.56,-.06).rotation.set(-1.25,0,-Math.PI*0.15);M(new THREE.BoxGeometry(.2,.1,.02),topD,spine,0,.18,.12);for(const sx of[-1,1])M(new THREE.CylinderGeometry(.006,.006,.12,4),white,spine,sx*.035,.47,.13)}
+ if(cfg.top==='jacket'){M(new THREE.BoxGeometry(.11,.4,.02),mat(0xe8e3d8,.9),spine,0,.3,.115);for(const sx of[-1,1]){M(new THREE.BoxGeometry(.07,.16,.03),topD,spine,sx*.07,.53,.1).rotation.z=sx*.5;M(new THREE.BoxGeometry(.02,.42,.02),topD,spine,sx*.06,.3,.12)}}
+ if(cfg.top==='sweater'){for(let i=0;i<3;i++)M(new THREE.TorusGeometry(.18-i*.002,.012,6,20),topD,spine,0,.14+i*.12,0,1.1,1,.7).rotation.x=Math.PI/2;M(new THREE.TorusGeometry(.065,.022,6,14),topD,spine,0,.56,0).rotation.x=Math.PI/2}
+ if(cfg.top==='tshirt'){M(new THREE.TorusGeometry(.065,.012,6,14),topD,spine,0,.555,.01).rotation.x=Math.PI/2}
+ // neck + head
+ M(new THREE.CylinderGeometry(.048,.055,.1,10),skin,spine,0,.6,0);
+ const head=grp(spine,0,.75,0);U.head=head;
+ M(sph(.118,20,16),skin,head,0,0,0,.93,1.08,1);M(sph(.08,14,10),skin,head,0,-.06,.03,.95,.7,.9);
+ for(const sx of[-1,1]){M(sph(.026,8,6),skin,head,sx*.112,0,-.005,.5,1,.8);
+  const eye=grp(head,sx*.043,.018,.096);M(sph(.022,12,10),white,eye,0,0,0,1,.8,.6);M(sph(.012,10,8),iris,eye,0,0,.01);M(sph(.006,8,6),dark,eye,0,0,.017);U[sx<0?'eyeL':'eyeR']=eye;
+  M(new THREE.BoxGeometry(.045,.01,.012),hairM,head,sx*.045,.055,.105).rotation.z=-sx*.12;M(sph(.018,8,6),blush,head,sx*.07,-.03,.085,1,.6,.4)}
+ M(sph(.017,10,8),skin,head,0,-.008,.115,.8,1,1.1);
+ const mouth=M(new THREE.TorusGeometry(.022,.006,6,12,Math.PI),lip,head,0,-.05,.1);mouth.rotation.z=Math.PI;U.mouth=mouth;
+ // hair
+ const hs=cfg.hairStyle,capG=(r,th=.55)=>new THREE.SphereGeometry(r,20,14,0,TAU,0,Math.PI*th);
+ if(hs!=='bald'&&hs!=='mohawk'){const h=M(capG(hs==='buzz'?.121:.127,hs==='buzz'?.5:.56),hairM,head,0,.01,-.008,.95,1.08,1.04);h.rotation.x=-.18}
+ if(hs==='short'||hs==='ponytail'||hs==='long'){M(new THREE.BoxGeometry(.17,.035,.04),hairM,head,0,.085,.085).rotation.x=.5}
+ if(hs==='long'){M(new THREE.CylinderGeometry(.115,.13,.26,16,1,true,Math.PI*0.62,Math.PI*1.76),hairM,head,0,-.07,-.01).material.side=THREE.DoubleSide}
+ if(hs==='ponytail'){M(sph(.04),hairM,head,0,.03,-.125);M(cap(.035,.14),hairM,head,0,-.08,-.145).rotation.x=.25}
+ if(hs==='curly'){for(let i=0;i<22;i++){const a=i*2.399,r=Math.sqrt((i+.5)/22);const y=.04+.07*Math.cos(r*1.4),rr=.11*Math.sin(r*1.4+.25);M(sph(.036,8,6),hairM,head,Math.cos(a)*rr,y,Math.sin(a)*rr-.02)}}
+ if(hs==='mohawk'){for(let i=0;i<6;i++)M(new THREE.ConeGeometry(.025,.09,6),hairM,head,0,.1+Math.sin(i/5*Math.PI)*.02,.07-i*.035).rotation.x=-.3-i*.15;M(capG(.12,.5),mat(shade(cfg.hair,.6),.9),head,0,.008,-.008,.94,1.06,1.03)}
+ // headwear
+ if(cfg.hat==='beanie'){M(capG(.133,.52),topD,head,0,.02,-.005,.97,1.1,1.05);M(new THREE.TorusGeometry(.118,.025,8,22),topD,head,0,.03,-.005,1,1,1.05).rotation.x=Math.PI/2+.08;M(sph(.035,8,6),white,head,0,.165,-.01)}
+ if(cfg.hat==='cap'){M(capG(.131,.5),top,head,0,.025,-.005,.97,1.05,1.05);M(new THREE.CylinderGeometry(.09,.09,.012,18,1,false,0,Math.PI),topD,head,0,.03,.1).rotation.y=-Math.PI/2}
+ if(cfg.hat==='headphones'){M(new THREE.TorusGeometry(.13,.012,6,20,Math.PI),dark,head,0,.02,0);for(const sx of[-1,1])M(new THREE.CylinderGeometry(.045,.045,.03,14),mat(0x2b2925,.4),head,sx*.122,0,0).rotation.z=Math.PI/2}
+ // glasses
+ if(cfg.glasses!=='none'){const fr=mat(cfg.glasses==='shades'?0x0d0d0d:0x1a1714,.35);
+  for(const sx of[-1,1]){if(cfg.glasses==='round')M(new THREE.TorusGeometry(.025,.004,6,16),fr,head,sx*.043,.018,.118);else{const g=grp(head,sx*.043,.018,.118);M(new THREE.BoxGeometry(.055,.004,.005),fr,g,0,.02,0);M(new THREE.BoxGeometry(.055,.004,.005),fr,g,0,-.02,0);M(new THREE.BoxGeometry(.004,.044,.005),fr,g,-.027,0,0);M(new THREE.BoxGeometry(.004,.044,.005),fr,g,.027,0,0)}
+   if(cfg.glasses==='shades')M(new THREE.CircleGeometry(.025,14),mat(0x050505,.1,{metalness:.6}),head,sx*.043,.018,.119);M(new THREE.BoxGeometry(.004,.004,.1),fr,head,sx*.068,.02,.07)}
+  M(new THREE.BoxGeometry(.03,.004,.005),fr,head,0,.022,.12)}
+ // arms
+ for(const sx of[-1,1]){const sh=grp(spine,sx*.235,.47,0);M(sph(.068,12,10),top,sh,0,0,0);M(cap(.055,.2),top,sh,0,-.15,0);const el=grp(sh,0,-.29,0);M(cap(.048,.18),longSleeve?top:skin,el,0,-.12,0);
+  if(longSleeve)M(new THREE.CylinderGeometry(.052,.052,.04,10),topD,el,0,-.23,0);const hand=M(sph(.05,12,10),skin,el,0,-.28,.005,.85,1.1,.7);U[sx<0?'shL':'shR']=sh;U[sx<0?'elL':'elR']=el;if(sx>0)U.handR=hand}
+ // extras
+ if(cfg.extra==='backpack'){const bp=mat(shade(cfg.pants,1.3),.85);M(new THREE.BoxGeometry(.28,.34,.13),bp,spine,0,.3,-.18);M(new THREE.BoxGeometry(.2,.14,.05),bp,spine,0,.2,-.26);for(const sx of[-1,1])M(new THREE.BoxGeometry(.03,.36,.03),bp,spine,sx*.1,.33,.1)}
+ if(cfg.extra==='scarf'){const sc=mat(cfg.hair==='#b23a2c'?'#2f5d50':'#b23a2c',.95);M(new THREE.TorusGeometry(.08,.035,8,16),sc,spine,0,.57,0,1,1,1.1).rotation.x=Math.PI/2;M(new THREE.BoxGeometry(.07,.22,.03),sc,spine,.05,.43,.13).rotation.z=.1}
+ if(cfg.extra==='lanyard'){M(new THREE.TorusGeometry(.1,.006,4,16,Math.PI),mat(0xb23a2c,.6),spine,0,.47,.07).rotation.set(0,0,Math.PI);M(new THREE.BoxGeometry(.06,.08,.005),white,spine,0,.33,.135)}
+ // flashlight beam (shown for remote players)
+ const beam=new THREE.Mesh(new THREE.ConeGeometry(.55,3.2,14,1,true),new THREE.MeshBasicMaterial({color:0xfff1c8,transparent:true,opacity:.08,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,fog:true}));
+ beam.rotation.x=-Math.PI/2;beam.position.set(0,0,1.62);const beamG=grp(spine,0,.42,.1);beamG.add(beam);beamG.visible=false;U.beam=beamG;
+ root.traverse(o=>{if(o.isMesh){o.castShadow=false;if(layer!=null)o.layers.set(layer)}});
+ root.scale.setScalar(0.955);root.userData={U,cfg,ph:0,blink:2+Math.random()*3,wave:0};return root}
+function animAvatar(av,spd,dt,crouch,pitch,t){const ud=av.userData,U=ud.U;const sp=Math.min(1,spd/3),run=Math.max(0,Math.min(1,(spd-3.2)/2));
+ ud.ph+=dt*(1.6+spd*1.9);const s=Math.sin(ud.ph),c=Math.cos(ud.ph);const amp=(0.45+run*0.35)*sp;
+ const idle=Math.sin(t*1.7)*0.012;
+ if(crouch){U.pelvis.position.y=0.52;U.hipL.rotation.x=-1.25+s*amp*.5;U.hipR.rotation.x=-1.25-s*amp*.5;U.kneeL.rotation.x=1.9;U.kneeR.rotation.x=1.9;U.spine.rotation.x=0.45}
+ else{U.pelvis.position.y=0.9+Math.abs(c)*0.03*sp+idle*.5;U.hipL.rotation.x=-s*amp;U.hipR.rotation.x=s*amp;U.kneeL.rotation.x=Math.max(0,c)*amp*1.5+.05;U.kneeR.rotation.x=Math.max(0,-c)*amp*1.5+.05;U.spine.rotation.x=run*0.18+sp*0.04}
+ U.spine.rotation.y=s*amp*0.12;U.spine.scale.y=1+idle;
+ U.shL.rotation.x=s*amp*0.9;U.shR.rotation.x=-s*amp*0.9;U.shL.rotation.z=-0.08;U.shR.rotation.z=0.08;U.elL.rotation.x=-0.25-run*0.9-Math.max(0,s)*amp*.4;U.elR.rotation.x=-0.25-run*0.9-Math.max(0,-s)*amp*.4;
+ if(ud.flash){U.shR.rotation.x=-1.25-pitch*0.8;U.elR.rotation.x=-0.15;U.shR.rotation.z=0.05}
+ if(ud.wave>0){ud.wave-=dt;U.shR.rotation.x=-0.2;U.shR.rotation.z=2.6;U.elR.rotation.x=0;U.elR.rotation.z=Math.sin(t*12)*0.5}else U.elR.rotation.z=0;
+ U.head.rotation.x=-Math.max(-0.7,Math.min(0.7,pitch))*0.7-(crouch?0.35:0);U.head.rotation.y=-s*amp*0.1;
+ U.beam.rotation.x=-pitch*0.9+(crouch?0.45:0)*0;U.beam.visible=!!ud.flash;
+ ud.blink-=dt;const bl=ud.blink<0.12?0.1:1;if(ud.blink<0)ud.blink=2.5+Math.random()*3.5;U.eyeL.scale.y=U.eyeR.scale.y=bl}
+function disposeObj(o){o.traverse(m=>{if(m.isMesh){m.geometry.dispose();(Array.isArray(m.material)?m.material:[m.material]).forEach(x=>{x.map?.dispose?.();x.dispose()})}if(m.isSprite){m.material.map?.dispose();m.material.dispose()}})}
+let me=makeAvatar(avCfg,1);scene.add(me);
+function rebuildMe(){scene.remove(me);disposeObj(me);me=makeAvatar(avCfg,1);scene.add(me)}
+function nameSprite(text,col){const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');x.font='700 30px DM Sans,system-ui,sans-serif';const w=Math.min(240,x.measureText(text).width+34);
+ x.fillStyle='rgba(20,18,16,.72)';x.beginPath();x.roundRect((256-w)/2,10,w,44,22);x.fill();x.fillStyle=col||'#b23a2c';x.beginPath();x.arc((256-w)/2+18,32,6,0,TAU);x.fill();x.fillStyle='#fbf9f5';x.textAlign='center';x.textBaseline='middle';x.fillText(text,128+8,33);
+ const tx=new THREE.CanvasTexture(c);tx.colorSpace=THREE.SRGBColorSpace;const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,depthWrite:false,transparent:true,fog:false}));sp.scale.set(0.9,0.225,1);return sp}
+
+// ---------- avatar customiser ----------
+const CUS={open:false,r:null,scene:null,cam:null,av:null,rot:0.4,drag:null,walk:false,t:0};
+function cusInit(){if(CUS.r)return;const cv=$('cusCanvas');CUS.r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});CUS.r.setPixelRatio(Math.min(devicePixelRatio,2));CUS.r.outputColorSpace=THREE.SRGBColorSpace;CUS.r.toneMapping=THREE.ACESFilmicToneMapping;
+ CUS.scene=new THREE.Scene();CUS.cam=new THREE.PerspectiveCamera(30,1,0.1,20);CUS.cam.position.set(0,1.15,4.2);CUS.cam.lookAt(0,0.95,0);
+ CUS.scene.add(new THREE.HemisphereLight(0xfff4e6,0x8a7a6a,1.4));const d=new THREE.DirectionalLight(0xffffff,2.2);d.position.set(2,3,3);CUS.scene.add(d);const r=new THREE.DirectionalLight(0xb23a2c,0.8);r.position.set(-3,1.5,-2);CUS.scene.add(r);
+ const fl=new THREE.Mesh(new THREE.CircleGeometry(0.8,32),new THREE.MeshStandardMaterial({color:0xe6dfd2,roughness:1}));fl.rotation.x=-Math.PI/2;CUS.scene.add(fl);
+ cv.addEventListener('pointerdown',e=>{CUS.drag=e.clientX;cv.setPointerCapture(e.pointerId)});cv.addEventListener('pointermove',e=>{if(CUS.drag!=null){CUS.rot+=(e.clientX-CUS.drag)*0.012;CUS.drag=e.clientX}});cv.addEventListener('pointerup',()=>CUS.drag=null)}
+function cusBuild(){if(CUS.av){CUS.scene.remove(CUS.av);disposeObj(CUS.av)}CUS.av=makeAvatar(avCfg,null);CUS.scene.add(CUS.av)}
+function cusUI(){const box=$('cusOpts');box.innerHTML='';
+ for(const k of['hairStyle','hat','top','glasses','extra']){const row=document.createElement('div');row.className='crow';row.innerHTML=`<label>${AV_LABEL[k]}</label>`;const w=document.createElement('div');w.className='chips';
+  for(const v of AV_OPTS[k]){const b=document.createElement('button');b.className='chip'+(avCfg[k]===v?' on':'');b.textContent=v==='tshirt'?'t-shirt':v;b.onclick=()=>{avCfg[k]=v;cusChanged()};w.appendChild(b)}row.appendChild(w);box.appendChild(row)}
+ for(const k of['skin','hair','eyes','topCol','pants','shoes']){const row=document.createElement('div');row.className='crow';row.innerHTML=`<label>${AV_LABEL[k]}</label>`;const w=document.createElement('div');w.className='chips';
+  for(const v of AV_OPTS[k]){const b=document.createElement('button');b.className='sw'+(avCfg[k]===v?' on':'');b.style.background=v;b.title=v;b.onclick=()=>{avCfg[k]=v;cusChanged()};w.appendChild(b)}row.appendChild(w);box.appendChild(row)}}
+function cusChanged(){store('dh_avatar',avCfg);cusUI();cusBuild();rebuildMe();if(NET.on)NET.retrack()}
+function openCustom(){cusInit();$('cusName').value=avCfg.name;cusUI();cusBuild();$('custom').classList.remove('hide');CUS.open=true;const cv=$('cusCanvas'),w=cv.clientWidth||260,h=cv.clientHeight||360;CUS.r.setSize(w,h,false);CUS.cam.aspect=w/h;CUS.cam.updateProjectionMatrix()}
+function closeCustom(){avCfg.name=avSanitize({name:$('cusName').value}).name;store('dh_avatar',avCfg);rebuildMe();if(NET.on)NET.retrack();$('custom').classList.add('hide');CUS.open=false}
+function cusFrame(dt,t){if(!CUS.open||!CUS.av)return;if(CUS.drag==null)CUS.rot+=dt*0.25;CUS.av.rotation.y=CUS.rot;CUS.av.userData.flash=false;animAvatar(CUS.av,CUS.walk?3:0,dt,false,Math.sin(t*0.6)*0.15,t);CUS.r.render(CUS.scene,CUS.cam)}
+
 const _rp=new THREE.Vector3(),_cp=new THREE.Vector3(),_rm=new THREE.Matrix4(),_lk=new THREE.Vector3(),_tg=new THREE.Vector3(),_vw=new THREE.Vector3(),_pl=new THREE.Plane(),_cl=new THREE.Vector4(),_q4=new THREE.Vector4(),_nm=new THREE.Vector3();
 function pickMirror(){let best=null,bd=4.5;const fx=-Math.sin(yaw),fz=-Math.cos(yaw);
  for(const ch of chunks.values())for(const m of ch.mirrors){const dx=m.c.x-P1.x,dz=m.c.z-P1.z,d=Math.hypot(dx,dz);if(d>bd)continue;if(-(dx*m.n.x+dz*m.n.z)<0.15)continue;if((dx*fx+dz*fz)/d<0.2)continue;bd=d;best=m}return best}
 function renderMirror(){activeMirror=hidden||CL.inside||SM.inside?null:pickMirror();mirRect.visible=mirCirc.visible=false;if(!activeMirror)return;const m=activeMirror,mesh=m.kind==='rect'?mirRect:mirCirc;activeMirMesh=mesh;
  mesh.position.copy(m.c).addScaledVector(m.n,0.002);mesh.rotation.set(0,m.ry,0);mesh.scale.set(m.w,m.h,1);mesh.updateMatrixWorld();camera.updateMatrixWorld();
- me.visible=state==='play'&&!hidden;me.position.set(P1.x,py+(crouch?-0.5:0),P1.z);me.rotation.y=yaw+Math.PI;me.scale.y=crouch?0.7:1;
+ me.visible=state==='play'&&!hidden;me.position.set(P1.x,py,P1.z);me.rotation.y=yaw+Math.PI;
  _rp.setFromMatrixPosition(mesh.matrixWorld);_cp.setFromMatrixPosition(camera.matrixWorld);_rm.extractRotation(mesh.matrixWorld);_nm.set(0,0,1).applyMatrix4(_rm);
  _vw.subVectors(_rp,_cp);if(_vw.dot(_nm)>0)return;_vw.reflect(_nm).negate().add(_rp);_rm.extractRotation(camera.matrixWorld);_lk.set(0,0,-1).applyMatrix4(_rm).add(_cp);
  _tg.subVectors(_rp,_lk).reflect(_nm).negate().add(_rp);mirCam.position.copy(_vw);mirCam.up.set(0,1,0).applyMatrix4(_rm).reflect(_nm);mirCam.lookAt(_tg);mirCam.far=camera.far;mirCam.updateMatrixWorld();mirCam.projectionMatrix.copy(camera.projectionMatrix);
@@ -1166,7 +1355,7 @@ function poseClive(k,t){const u=CL.obj.userData,j=1-k;u.hips.position.y=0.55+0.9
  u.head.rotation.set(-1.0*j+Math.sin(t*1.7)*0.1,0,Math.sin(t*2.3)*0.35);u.face.material.rotation=u.head.rotation.z*0.6}
 function updateClive(dt,t){
  if(!settings.scares){if(CL.state!=='idle'||CL.inside)resetClive();return}
- if(CL.state==='idle'){if(SC.phase==='idle'&&!D.active&&!MM.active&&!hidden&&SM.state==='idle'&&!ADMIN.noSpawn&&GR.state==='idle'){CL.next-=dt;if(CL.next<=0)spawnCliveDoor()}return}
+ if(CL.state==='idle'){if(SC.phase==='idle'&&!D.active&&!MM.active&&!hidden&&SM.state==='idle'&&!ADMIN.noSpawn&&GR.state==='idle'&&AR.state==='idle'){CL.next-=dt;if(CL.next<=0)spawnCliveDoor()}return}
  if(CL.state==='door'){const d=CL.door;CL.life-=dt;const{t:tv,n}=doorBasis(d),dx=P1.x-d.x,dz=P1.z-d.z,a=dx*tv.x+dz*tv.z,b=dx*n.x+dz*n.z;
   CL.hum-=dt;if(CL.hum<=0&&Math.hypot(dx,dz)<9){CL.hum=4+Math.random()*4;A.whimper(0.25)}
   if(b<0.36&&b>-0.2&&Math.abs(a)<0.42&&!hidden){enterClive();return}
@@ -1248,7 +1437,7 @@ function spawnHoward(){const pgx=Math.floor(P1.x/S),pgz=Math.floor(P1.z/S),fx=-M
  if(!best){HW.next=8;return}if(!HW.obj)HW.obj=makeHoward();HW.x=best[0];HW.z=best[1];HW.obj.position.set(HW.x,-0.03,HW.z);HW.obj.rotation.y=Math.round(Math.atan2(P1.x-HW.x,P1.z-HW.z)/(Math.PI/2))*(Math.PI/2);
  scene.add(HW.obj);HW.active=true;HW.life=(70+Math.random()*50);HW.t=0;HW.passed=false;HW.creak=1.2;A.plant(HW.x,HW.z)}
 function updateHoward(dt,t){if(!settings.scares){if(HW.active)resetHoward();return}
- if(!HW.active){if(!CL.inside&&SM.state==='idle'&&SC.phase==='idle'&&!MM.active&&!ADMIN.noSpawn&&GR.state==='idle'){HW.next-=dt;if(HW.next<=0)spawnHoward()}return}
+ if(!HW.active){if(!CL.inside&&SM.state==='idle'&&SC.phase==='idle'&&!MM.active&&!ADMIN.noSpawn&&GR.state==='idle'&&AR.state==='idle'){HW.next-=dt;if(HW.next<=0)spawnHoward()}return}
  HW.t+=dt;HW.life-=dt;poseHoward(t);const dx=P1.x-HW.x,dz=P1.z-HW.z,d=Math.hypot(dx,dz);
  HW.creak-=dt;if(HW.creak<=0&&d<12){HW.creak=6+Math.random()*5;Math.random()<0.35?A.woodCreak(HW.x,HW.z):A.groan(HW.x,HW.z)}
  if(d<2.6&&!HW.passed){HW.passed=true}
@@ -1318,7 +1507,7 @@ function arenaGround(){let best=null;const lx=P1.x-SME.x,lz=P1.z-SME.z;for(const
 function arenaCollide(){P1.x=Math.max(SME.x-SAW/2+R,Math.min(SME.x+SAW/2-R,P1.x));P1.z=Math.min(SME.z+5.6,P1.z);
  for(const p of SM.plats){if(p.top>py+0.32){const x0=SME.x+p.x0-0.2,x1=SME.x+p.x1+0.2,z0=SME.z+p.z0-0.2,z1=SME.z+p.z1+0.2;if(P1.x>x0&&P1.x<x1&&P1.z>z0&&P1.z<z1){const m=Math.min(P1.x-x0,x1-P1.x,P1.z-z0,z1-P1.z);if(m===P1.x-x0)P1.x=x0;else if(m===x1-P1.x)P1.x=x1;else if(m===P1.z-z0)P1.z=z0;else P1.z=z1}}}}
 function updateSimon(dt,t){if(!settings.scares){if(SM.state!=='idle')endSimon(false);return}
- if(SM.state==='idle'){if(!CL.inside&&CL.state==='idle'&&SC.phase==='idle'&&!D.active&&!MM.active&&!hidden&&!HW.active&&!ADMIN.noSpawn&&GR.state==='idle'){SM.next-=dt;if(SM.next<=0)startSimon()}return}
+ if(SM.state==='idle'){if(!CL.inside&&CL.state==='idle'&&SC.phase==='idle'&&!D.active&&!MM.active&&!hidden&&!HW.active&&!ADMIN.noSpawn&&GR.state==='idle'&&AR.state==='idle'){SM.next-=dt;if(SM.next<=0)startSimon()}return}
  if(SM.state==='intro'){SM.t+=dt;if(SM.t>3.6)enterArena();return}
  if(SM.state!=='run')return;SM.t+=dt;
  const fov=Math.max(42,settings.fov-26);if(Math.abs(camera.fov-fov)>0.1){camera.fov+=(fov-camera.fov)*Math.min(1,dt*3);camera.updateProjectionMatrix()}
@@ -1357,7 +1546,7 @@ function hallRun(){// is the player in a long straight hallway? find the far end
 function spawnGerald(force){const h=hallRun();if(!h)return false;if(!GR.obj)GR.obj=makeGerald();GR.x=h.x;GR.z=h.z;GR.axis=h.axis;GR.dir=h.dir;GR.obj.position.set(GR.x,0,GR.z);GR.obj.rotation.y=Math.atan2(P1.x-GR.x,P1.z-GR.z);GR.obj.userData.rig.rotation.x=0;
  scene.add(GR.obj);GR.state='stand';GR.t=0;GR.grace=Math.max(2.2,4-LEVEL*0.18);A.gStart();return true}
 function updateGerald(dt,t){if(!settings.scares){if(GR.state!=='idle')resetGerald();return}
- if(GR.state==='idle'){if(SC.phase==='idle'&&!D.active&&!MM.active&&!HW.active&&CL.state==='idle'&&SM.state==='idle'&&!hidden&&!ADMIN.noSpawn){GR.next-=dt;if(GR.next<=0&&!spawnGerald())GR.next=1.5}return}
+ if(GR.state==='idle'){if(SC.phase==='idle'&&!D.active&&!MM.active&&!HW.active&&CL.state==='idle'&&SM.state==='idle'&&AR.state==='idle'&&!hidden&&!ADMIN.noSpawn){GR.next-=dt;if(GR.next<=0&&!spawnGerald())GR.next=1.5}return}
  GR.t+=dt;const o=GR.obj,u=o.userData;for(const sp of u.smoke){sp.userData.h+=sp.userData.v*dt*(GR.state==='charge'?4:1);if(sp.userData.h>2.5)sp.userData.h=0;sp.position.set(sp.userData.ox+Math.sin(t+sp.userData.h*3)*0.08,sp.userData.h,sp.userData.oz+(GR.state==='charge'?sp.userData.h*0.4:0))}
  const dx=P1.x-GR.x,dz=P1.z-GR.z,d=Math.hypot(dx,dz),seen=!hidden&&!wallBetween(P1.x,P1.z,GR.x,GR.z);
  if(GR.state==='stand'){o.rotation.y=Math.atan2(dx,dz);u.face.material.rotation=Math.sin(t*1.3)*0.15;A.gInt=Math.min(1,GR.t/GR.grace);$('vign').style.opacity=0.3*A.gInt;
@@ -1369,9 +1558,49 @@ function updateGerald(dt,t){if(!settings.scares){if(GR.state!=='idle')resetGeral
    $('black').style.transition='none';$('black').style.opacity=1;$('scareWrap').classList.add('on');A.jumpHit();A.scream(0.7);A.humanScream(0.9);SC.phase='jump';SC.t=0;SC.lethal='Gerald';SC.count++}return}
  if(GR.state==='fade'){o.position.y-=dt*0.6;for(const sp of u.smoke)sp.material.opacity*=0.96;if(GR.t>1.2){scene.remove(o);for(const sp of u.smoke)sp.material.opacity=0.35+Math.random()*0.35;o.position.y=0;GR.state='idle';GR.next=geraldDelay();$('vign').style.opacity=0;achieve('gerald','Got out of the hallway')}}}
 
+// ---------- Arthur (the floating head that wanders) ----------
+const ARTHUR_SRC='data:image/webp;base64,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';
+const AR={state:'idle',next:100,t:0,obj:null,x:0,z:0,wcell:null,wprev:null,lost:0,life:0,path:null,pathT:0,cell:'',snd:2,seenT:0};
+function arthurDelay(){return Math.max(30,(80+Math.random()*80)*monRate())}
+function resetArthur(first){if(AR.obj&&AR.obj.parent)scene.remove(AR.obj);AR.state='idle';AR.next=first?(70+Math.random()*60)*firstRate():arthurDelay();$('chase').classList.add('hide')}
+function makeArthur(){const g=new THREE.Group();const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW,color:0x000000,transparent:true,opacity:0.8,depthWrite:false,fog:false}));halo.scale.set(1.9,1.9,1);g.add(halo);
+ const face=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.TextureLoader().load(ARTHUR_SRC,t=>{t.colorSpace=THREE.SRGBColorSpace}),transparent:true,alphaTest:.1,color:0xd8d8d8}));face.scale.set(0.62,0.81,1);g.add(face);
+ const parts=[];for(let i=0;i<34;i++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW,color:0x000000,transparent:true,opacity:0.45+Math.random()*0.45,depthWrite:false,fog:false}));const sc=0.18+Math.random()*0.38;sp.scale.set(sc,sc,1);
+  sp.userData={r:0.35+Math.random()*0.45,a:Math.random()*TAU,b:(Math.random()-.5)*Math.PI,w:(0.6+Math.random()*1.6)*(Math.random()<.5?-1:1),trail:i>=22,lag:new THREE.Vector3()};g.add(sp);parts.push(sp)}
+ g.userData={face,halo,parts};return g}
+function spawnArthur(){const pgx=Math.floor(P1.x/S),pgz=Math.floor(P1.z/S);const{depth:dep}=bfs(pgx,pgz,6);const c=[...dep].filter(([k,d])=>d>=3&&d<=6).map(([k])=>k.split(',').map(Number)).filter(([a,b])=>wallBetween(P1.x,P1.z,a*S+S/2,b*S+S/2));
+ if(!c.length)return false;const[gx,gz]=c[Math.random()*c.length|0];if(!AR.obj)AR.obj=makeArthur();AR.x=gx*S+S/2;AR.z=gz*S+S/2;AR.obj.position.set(AR.x,1.65,AR.z);scene.add(AR.obj);
+ AR.state='wander';AR.t=0;AR.life=110;AR.wcell=null;AR.wprev=null;AR.lost=0;AR.snd=1;AR.seenT=0;return true}
+function updateArthur(dt,t){if(!settings.scares){if(AR.state!=='idle')resetArthur();return}
+ if(AR.state==='idle'){if(SC.phase==='idle'&&!D.active&&!MM.active&&!HW.active&&CL.state==='idle'&&SM.state==='idle'&&GR.state==='idle'&&!ADMIN.noSpawn){AR.next-=dt;if(AR.next<=0&&!spawnArthur())AR.next=6}return}
+ AR.t+=dt;AR.life-=dt;const o=AR.obj,u=o.userData;const dx=P1.x-AR.x,dz=P1.z-AR.z,d=Math.hypot(dx,dz);
+ const sees=!hidden&&d<17&&!wallBetween(AR.x,AR.z,P1.x,P1.z);
+ // particles swirl round the head; some trail behind when he moves
+ for(const sp of u.parts){const q=sp.userData;q.a+=q.w*dt*(AR.state==='chase'?2.2:1);if(q.trail){q.lag.lerp(new THREE.Vector3(o.position.x,o.position.y,o.position.z),dt*1.5);sp.position.set(q.lag.x-o.position.x+Math.sin(q.a)*0.15,q.lag.y-o.position.y+Math.cos(q.a)*0.15,q.lag.z-o.position.z)}
+  else sp.position.set(Math.cos(q.a)*q.r*Math.cos(q.b),Math.sin(q.b+t*0.7)*q.r*0.8,Math.sin(q.a)*q.r*Math.cos(q.b))}
+ u.face.material.rotation=Math.sin(t*0.8)*0.12;u.halo.material.opacity=0.6+Math.sin(t*3)*0.12;
+ const gx=Math.floor(AR.x/S),gz=Math.floor(AR.z/S);let tx=AR.x,tz=AR.z,sp=1.15;
+ if(AR.state==='wander'){
+  if(sees){AR.seenT+=dt;if(AR.seenT>0.35){AR.state='chase';AR.lost=0;AR.path=null;A.arthurSpot(AR.x,AR.z);$('chase').textContent='SOMETHING IS FOLLOWING YOU';$('chase').classList.remove('hide');achieve('arthur','Arthur saw you')}}else AR.seenT=0;
+  if(!AR.wcell||(AR.wcell[0]===gx&&AR.wcell[1]===gz&&Math.hypot(AR.x-(gx*S+S/2),AR.z-(gz*S+S/2))<1.2)){const all=cellNbrs(gx,gz),nb=all.filter(c=>!AR.wprev||c[0]!==AR.wprev[0]||c[1]!==AR.wprev[1]),opts=nb.length?nb:all;AR.wprev=[gx,gz];AR.wcell=opts.length?opts[Math.random()*opts.length|0]:[gx,gz]}
+  const[nx,nz]=AR.wcell;if(nx===gx&&nz===gz){tx=gx*S+S/2;tz=gz*S+S/2}else{tx=(gx+nx)*S/2+S/2+(nx-gx)*0.9;tz=(gz+nz)*S/2+S/2+(nz-gz)*0.9}
+  AR.snd-=dt;if(AR.snd<=0&&d<16){AR.snd=3+Math.random()*3;A.arthurHum(AR.x,AR.z)}
+  if(AR.life<=0&&!sees&&d>8){scene.remove(o);AR.state='idle';AR.next=arthurDelay();return}}
+ else if(AR.state==='chase'){sp=Math.min(5.1,4.2+AR.t*0.02);AR.lost=sees?0:AR.lost+dt;
+  if(AR.lost>6){AR.state='wander';AR.wcell=null;$('chase').classList.add('hide');A.arthurHum(AR.x,AR.z);AR.life=Math.max(AR.life,25)}
+  else{const pgx=Math.floor(P1.x/S),pgz=Math.floor(P1.z/S);if((gx===pgx&&gz===pgz)||(sees&&clearPath(AR.x,AR.z,P1.x,P1.z,0.2))){tx=P1.x;tz=P1.z}
+   else{AR.pathT-=dt;if(AR.cell!==gx+','+gz){AR.cell=gx+','+gz;AR.path=null}if(AR.pathT<=0||!AR.path){AR.pathT=0.35;const{prev}=bfs(gx,gz,14,[pgx,pgz]);let k=pgx+','+pgz,nk=null;if(prev.has(k)){while(prev.get(k)&&prev.get(k)!==gx+','+gz)k=prev.get(k);nk=prev.get(k)?k:null}AR.path=nk?nk.split(',').map(Number):null}
+    if(AR.path){const[nx,nz]=AR.path;tx=(gx+nx)*S/2+S/2+(nx-gx)*0.6;tz=(gz+nz)*S/2+S/2+(nz-gz)*0.6}else{tx=P1.x;tz=P1.z}}
+   AR.snd-=dt;if(AR.snd<=0){AR.snd=1.3+Math.random()*1.2;A.arthurWail(AR.x,AR.z)}
+   $('vign').style.opacity=Math.max(0,Math.min(1,(10-d)/8))}
+  if(d<0.9&&SC.phase==='idle'){scene.remove(o);AR.state='idle';AR.next=arthurDelay();$('chase').classList.add('hide');$('vign').style.opacity=0;const img=$('scareImg');img.src=ARTHUR_SRC;img.style.animation='none';void img.offsetWidth;img.style.animation='';
+   $('black').style.transition='none';$('black').style.opacity=1;$('scareWrap').classList.add('on');A.jumpHit();A.scream(0.8);A.humanScream(1.05);SC.phase='jump';SC.t=0;SC.lethal='Arthur';SC.count++;return}}
+ const mx=tx-AR.x,mz=tz-AR.z,ml=Math.hypot(mx,mz);if(ml>0.01){const st=Math.min(ml,sp*dt);AR.x+=mx/ml*st;AR.z+=mz/ml*st}
+ o.position.set(AR.x,1.6+Math.sin(t*1.7)*0.12+(AR.state==='chase'?Math.sin(t*9)*0.03:0),AR.z)}
+
 // ---------- death ----------
-const DEATH={Gerald:'You stayed in the hallway.',Simon:'Simon says, you lose.',Howard:'You touched him.',Daniel:'He caught up with you.',Francis:'You looked.',Clive:"You shouldn't have gone in."};let deaths=load('oh_deaths',0);
-function die(who,line){state='dead';SC.phase='idle';SC.lethal=null;SC.next=scareDelay();$('scareWrap').classList.remove('on');$('black').style.transition='none';$('black').style.opacity=1;$('vign').style.opacity=0;
+const DEATH={Arthur:'He found you.',Gerald:'You stayed in the hallway.',Simon:'Simon says, you lose.',Howard:'You touched him.',Daniel:'He caught up with you.',Francis:'You looked.',Clive:"You shouldn't have gone in."};let deaths=load('oh_deaths',0);
+function die(who,line){state='dead';netDeath(who);if(NET.on&&NET.started){$('bRetry').textContent=teammates().some(p=>!p.dead)?'Restore from backup':'Restore at the entrance';$('bDeadTitle').textContent='Leave co-op'}else{$('bRetry').textContent=$('bRetry').dataset.t||$('bRetry').textContent;$('bDeadTitle').textContent=$('bDeadTitle').dataset.t||$('bDeadTitle').textContent}SC.phase='idle';SC.lethal=null;SC.next=scareDelay();$('scareWrap').classList.remove('on');$('black').style.transition='none';$('black').style.opacity=1;$('vign').style.opacity=0;
  document.exitPointerLock?.();if(hidden)exitHide();A.muffle(true);A.chaseLvl=0;A.breath(false);HB.t=0;A.flatline();deaths++;store('oh_deaths',deaths);
  $('deadby').textContent='Killed by '+who;$('deadline').textContent=line||DEATH[who]||'';A.smStop&&A.smStop();if(SM.loop){try{SM.loop.s.stop()}catch(e){}SM.loop=null}const m=Math.floor(lvlTime/60),sc=Math.floor(lvlTime%60);
  $('deadstats').innerHTML=`<span><b>${LV.name}</b></span><span><b>${m}:${String(sc).padStart(2,'0')}</b>survived</span><span><b>${Math.round(lvlDist)}</b>m walked</span><span><b>${deaths}</b>total deaths</span>`;
@@ -1380,12 +1609,11 @@ function revive(){$('dead').classList.add('hide');$('black').style.transition='o
  battery=1;stamina=1;crouch=false}
 
 const ADMIN={noSpawn:false};
-
 // ---------- input ----------
 const isTouch=matchMedia('(pointer:coarse)').matches||'ontouchstart'in window;
-addEventListener('keydown',e=>{keysDown[e.code]=true;if(state==='play'){
+addEventListener('keydown',e=>{if(state==='chat'){if(e.code==='Enter')closeChat(true);else if(e.code==='Escape')closeChat(false);return}if(document.activeElement&&document.activeElement.tagName==='INPUT'&&document.activeElement.type==='text')return;keysDown[e.code]=true;if(state==='play'){
   if(e.code==='KeyF')toggleFlash();if(e.code==='KeyE')interact();if(e.code==='KeyM')cycleMap();if(e.code==='KeyP'){photo=!photo;$('hud').classList.toggle('hide',photo)}
-  if(e.code==='KeyJ')openJournal();if(e.code==='KeyZ'&&!hidden&&!MM.active)crouch=!crouch;if(e.code==='Space'&&(onGround||performance.now()/1000-lastGroundT<0.13)&&vy<=0.01&&!hidden&&!MM.active){vy=SM.inside?4.4:3.6;onGround=false;lastGroundT=-9}
+  if(e.code==='KeyJ')openJournal();if(e.code==='KeyT'&&NET.on&&NET.started){e.preventDefault();openChat();return}if(e.code==='KeyG'){me.userData.wave=1.6}if(e.code==='KeyZ'&&!hidden&&!MM.active)crouch=!crouch;if(e.code==='Space'&&(onGround||performance.now()/1000-lastGroundT<0.13)&&vy<=0.01&&!hidden&&!MM.active){vy=SM.inside?4.4:3.6;onGround=false;lastGroundT=-9}
  }else if(state==='note'&&(e.code==='KeyE'||e.code==='Escape'))closeNote();else if(state==='journal'&&(e.code==='KeyJ'||e.code==='Escape'))closeJournal();
  if(e.code==='Space'||e.code.startsWith('Arrow'))e.preventDefault()});
 addEventListener('keyup',e=>{keysDown[e.code]=false});
@@ -1395,7 +1623,7 @@ function lock(){try{const p=canvas.requestPointerLock();if(p&&p.catch)p.catch(()
 document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement!==canvas&&state==='play'&&!isTouch&&SM.state!=='intro')pause()});
 function toggleFlash(){if(CL.inside&&CL.lightOff){A.click();toast("It won't turn on.");return}flashOn=!flashOn&&battery>0.01;A.click();$('mLight').classList.toggle('on',flashOn)}
 function cycleMap(){mapMode=(mapMode+1)%3;const m=$('map');m.classList.toggle('hide',mapMode===0);m.classList.toggle('big',mapMode===2);const sz=mapMode===2?Math.min(420,innerHeight*0.6):170;m.width=m.height=sz}
-function pause(){if(state!=='play')return;state='pause';$('pause').classList.remove('hide');$('pseed').textContent=$('seedIn').value;$('pstat').textContent=`${LV.name} · ${Math.round(totalDist)} m walked in total`;saveGame()}
+function pause(){if(state!=='play')return;state='pause';$('bNew').classList.toggle('hide',NET.on);$('pause').classList.remove('hide');$('pseed').textContent=$('seedIn').value;$('pstat').textContent=`${LV.name} · ${Math.round(totalDist)} m walked in total`;saveGame()}
 function resume(){$('pause').classList.add('hide');state='play';A.resume();if(!isTouch)lock()}
 
 let curInter=null,hidden=null;
@@ -1405,10 +1633,10 @@ function enterHide(o){hidden={o,prev:P1.clone(),prevYaw:yaw};P1.set(o.cam.x,0,o.
 function exitHide(){if(!hidden)return;P1.copy(hidden.prev);hidden=null;$('hideov').className='';$('hidelab').classList.add('hide');A.rustle()}
 function interact(){if(hidden){exitHide();return}if(!curInter)return;const o=curInter;
  if(o.kind==='hide'){enterHide(o);return}
- if(o.kind==='door'){toggleDoor(o.id);return}
+ if(o.kind==='door'){toggleDoor(o.id);netDoor(o.id);return}
  if(o.kind==='note'){taken.add(o.it.id);o.mesh.parent?.remove(o.mesh);for(const ch of chunks.values()){const i=ch.inter.indexOf(o);if(i>=0)ch.inter.splice(i,1)}
   let ni=0;while(ni<NOTES.length&&notesFound.has(ni))ni++;if(ni>=NOTES.length)ni=o.it.ni;const isNew=!notesFound.has(ni);notesFound.add(ni);A.rustle();showNote(ni,isNew);if(notesFound.size>=5)achieve('notes5','Avid reader: 5 notes found');if(notesFound.size>=NOTES.length)achieve('notesAll','Read every listing')}
- else if(o.kind==='radio'){const on=!radioState.get(o.id);radioState.set(o.id,on);o.mesh.userData.led.material.color.setHex(on?0xffb347:0x333333);A.click();if(on)achieve('radio','DJ: switched on a radio')}}
+ else if(o.kind==='radio'){const on=!radioState.get(o.id);netRadio(o.id,on);radioState.set(o.id,on);o.mesh.userData.led.material.color.setHex(on?0xffb347:0x333333);A.click();if(on)achieve('radio','DJ: switched on a radio')}}
 function showNote(i,isNew){state='note';document.exitPointerLock?.();$('nvh').textContent=`NOTE ${i+1} of ${NOTES.length}${isNew?' · NEW':''}`;$('nvt').textContent=NOTES[i];$('noteview').classList.remove('hide')}
 function closeNote(){$('noteview').classList.add('hide');state='play';if(!isTouch)lock()}
 $('noteview').addEventListener('click',closeNote);
@@ -1435,18 +1663,149 @@ const saved=load('oh_save',null);
 $('seedIn').value=saved?.seed||randSeedStr();
 if(saved)$('bCont').classList.remove('hide');
 $('bRand').onclick=()=>{$('seedIn').value=randSeedStr();setupWorld(0);};
+// ---------- online co-op (Supabase Realtime) ----------
+const SB_URL='https://cehcvyxcqmtenhmgpvdc.supabase.co',SB_KEY='sb_publishable_KO9m3Eyqir8cPbKxmAetGQ_L4U5j9Pl';
+const PCOLS=['#e0533f','#3f8fe0','#53c46a','#e0b23f'];
+const NET={on:false,sb:null,ch:null,lobby:null,id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),code:'',pub:false,started:false,peers:new Map(),members:[],sendT:0,lastSent:null,host:false,errT:0,pending:null,
+ async client(){if(this.sb)return this.sb;const mod=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');this.sb=mod.createClient(SB_URL,SB_KEY,{realtime:{params:{eventsPerSecond:40}},auth:{persistSession:false,autoRefreshToken:false}});return this.sb},
+ send(p){if(!this.ch)return;p.f=this.id;try{this.ch.send({type:'broadcast',event:'m',payload:p})}catch(e){}},
+ meta(){return{id:this.id,name:avCfg.name,av:avSanitize(avCfg),pub:this.pub,started:this.started,lv:LEVEL,j:this.joinT}},
+ retrack(){if(this.ch)this.ch.track(this.meta()).catch(()=>{});this.lobbyTrack()},
+ isHost(){return this.members.length===0||this.members[0].id===this.id},
+ colorOf(id){const i=this.members.findIndex(m=>m.id===id);return PCOLS[(i<0?0:i)%4]},
+ async join(code,create){coopMsg('Connecting…');let sb;try{sb=await this.client()}catch(e){coopMsg('Could not load the online service. Co-op needs the game hosted on a normal website, such as GitHub Pages.',true);return false}
+  await this.leave(true);this.code=code;this.started=false;this.joinT=create?0:Date.now();
+  const ch=sb.channel('dh-room-'+code,{config:{broadcast:{self:false,ack:false},presence:{key:this.id}}});this.ch=ch;
+  ch.on('broadcast',{event:'m'},({payload})=>{try{onNet(payload)}catch(e){console.error(e)}});
+  ch.on('presence',{event:'sync'},()=>this.sync());
+  return await new Promise(res=>{let done=false;const to=setTimeout(()=>{if(!done){done=true;coopMsg('Could not reach the co-op server. If you are playing inside Claude, open the game from its hosted page (e.g. GitHub Pages) instead.',true);this.leave(true);res(false)}},9000);
+   ch.subscribe(async st=>{if(st==='SUBSCRIBED'&&!done){done=true;clearTimeout(to);await ch.track(this.meta());this.on=true;
+     if(!create){setTimeout(()=>{if(this.on&&this.members.length<=1&&!this.started){coopMsg('No game found with code '+code+'.',true);this.leave()}},3500);this.send({t:'hi'})}
+     showRoom();res(true)}
+    else if((st==='CHANNEL_ERROR'||st==='TIMED_OUT')&&!done){done=true;clearTimeout(to);coopMsg('Connection failed ('+st.toLowerCase()+').',true);this.leave(true);res(false)}})})},
+ sync(){const ps=this.ch.presenceState(),list=[];for(const k in ps){const m=ps[k][0];if(m)list.push(m)}list.sort((a,b)=>a.id<b.id?-1:1);
+  const old=new Set(this.members.map(m=>m.id));this.members=list;const now=new Set(list.map(m=>m.id));
+  for(const id of old)if(!now.has(id)&&id!==this.id){const p=this.peers.get(id);if(this.started)toast(`<b>${esc(p?.name||'A player')}</b> left the house.`);dropPeer(id)}
+  for(const m of list){if(m.id===this.id)continue;let p=this.peers.get(m.id);if(!p)p=addPeer(m);else if(JSON.stringify(p.cfg)!==JSON.stringify(m.av)){p.cfg=m.av;p.name=m.name;rebuildPeer(p)}if(!old.has(m.id)&&this.started&&old.size)toast(`<b>${esc(m.name)}</b> entered the house.`)}
+  if(list.length>4&&list.findIndex(m=>m.id===this.id)>=4){coopMsg('That game is full (4 players).',true);this.leave();return}
+  const wasHost=this.host;this.host=this.isHost();if(this.host&&!wasHost&&this.started&&old.size>1)toast('<b>You are now the host.</b>');
+  const any=list.find(m=>m.started);if(any&&!this.started&&this.pending==null){this.pending='req';this.send({t:'req'});setTimeout(()=>{if(this.pending==='req')this.pending=null},4000)}
+  renderRoom();renderTeam();this.lobbyTrack()},
+ async lobbyTrack(){if(!this.on||!this.host||!this.pub){if(this.lobbyMine){this.lobbyMine=false;try{await this.lobby?.untrack()}catch(e){}}return}
+  const l=await this.lobbySub();if(!l)return;this.lobbyMine=true;l.track({code:this.code,name:avCfg.name,n:this.members.length,lv:LEVEL,started:this.started}).catch(()=>{})},
+ async lobbySub(){if(this.lobby)return this.lobby;let sb;try{sb=await this.client()}catch(e){return null}const l=sb.channel('dh-lobby',{config:{presence:{key:this.id}}});this.lobby=l;
+  l.on('presence',{event:'sync'},()=>renderOpenGames());await new Promise(r=>{const to=setTimeout(r,6000);l.subscribe(st=>{if(st==='SUBSCRIBED'){clearTimeout(to);r()}})});return l},
+ async leave(quiet){if(this.ch){try{await this.ch.untrack();this.sb.removeChannel(this.ch)}catch(e){}}this.ch=null;if(this.lobbyMine){try{await this.lobby.untrack()}catch(e){}this.lobbyMine=false}
+  for(const id of[...this.peers.keys()])dropPeer(id);this.members=[];const was=this.on;this.on=false;this.started=false;this.host=false;this.pending=null;$('team').classList.add('hide');$('chatlog').innerHTML='';if(!quiet&&was)showCoop()}};
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function roomCode(){const a='BCDFGHJKLMNPQRSTVWXZ';let s='';for(let i=0;i<5;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
+
+// remote players
+function addPeer(m){const p={id:m.id,name:m.name,cfg:m.av,x:0,z:0,y:0,yaw:0,pitch:0,tx:0,tz:0,ty:0,tyaw:0,tpitch:0,cr:false,sp:0,fl:false,lv:-1,area:0,dead:false,seen:0,obj:null,tag:null};NET.peers.set(m.id,p);rebuildPeer(p);return p}
+function rebuildPeer(p){if(p.obj){scene.remove(p.obj);disposeObj(p.obj)}p.obj=makeAvatar(p.cfg,null);p.tag=nameSprite(p.name,NET.colorOf(p.id));p.tag.position.y=2.02;p.obj.add(p.tag);p.obj.visible=false;scene.add(p.obj)}
+function dropPeer(id){const p=NET.peers.get(id);if(!p)return;if(p.obj){scene.remove(p.obj);disposeObj(p.obj)}NET.peers.delete(id)}
+function updatePeers(dt,t){const special=CL.inside||SM.inside;
+ for(const p of NET.peers.values()){if(!p.obj)continue;const vis=NET.started&&p.lv===LEVEL&&!p.area&&!special&&state!=='title'&&performance.now()-p.seen<6000;p.obj.visible=vis;if(!vis)continue;
+  const k=Math.min(1,dt*12);const px=p.x,pz=p.z;p.x+=(p.tx-p.x)*k;p.z+=(p.tz-p.z)*k;p.y+=(p.ty-p.y)*k;let dy=p.tyaw-p.yaw;dy=Math.atan2(Math.sin(dy),Math.cos(dy));p.yaw+=dy*k;p.pitch+=(p.tpitch-p.pitch)*k;
+  const v=Math.hypot(p.x-px,p.z-pz)/Math.max(dt,1e-3);p.sp+=(Math.min(6,v)-p.sp)*Math.min(1,dt*8);
+  p.obj.position.set(p.x,p.y,p.z);p.obj.rotation.y=p.yaw+Math.PI;p.obj.userData.flash=p.fl;
+  if(p.dead){p.obj.rotation.z=Math.PI/2;p.obj.position.y=0.2}else p.obj.rotation.z=0;animAvatar(p.obj,p.dead?0:p.sp,dt,p.cr,p.pitch,t);
+  const d=Math.hypot(p.x-P1.x,p.z-P1.z);p.tag.visible=d<40;p.tag.material.opacity=Math.max(0.35,Math.min(1,1.4-d/30))}}
+function netTick(dt){if(!NET.on||!NET.started)return;NET.sendT-=dt;if(NET.sendT>0)return;
+ const area=hidden||CL.inside||SM.inside||MM.active?1:0,dead=state==='dead';const m={t:'p',lv:LEVEL,x:+P1.x.toFixed(2),z:+P1.z.toFixed(2),y:+py.toFixed(2),yw:+yaw.toFixed(2),pt:+pitch.toFixed(2),cr:crouch?1:0,fl:flashOn?1:0,a:area,d:dead?1:0,w:me.userData.wave>0?1:0};
+ const key=JSON.stringify(m),moving=NET.lastSent!==key;NET.sendT=moving?0.09:0.8;NET.lastSent=key;NET.send(m)}
+function teammates(){return[...NET.peers.values()].filter(p=>p.lv===LEVEL&&performance.now()-p.seen<6000)}
+
+// world sync
+function netSnap(){const doors=[];for(const[id,st]of DOORS){const o=st.tgt>0.5?1:0;if(st.has&&!st.broken&&o!==st.def)doors.push([id,o,st.side])}
+ return{t:'s',seed:$('seedIn').value,lv:LEVEL,keys:[...keysGot],taken:[...taken],door:door?{x:door.x,z:door.z,ry:door.group.rotation.y}:null,doors,radios:[...radioState],started:NET.started,pos:[P1.x,P1.z]}}
+function applySnap(m){if(m.lv!==LEVEL)return;for(const k of m.keys||[])keysGot.add(k);for(const it of m.taken||[])removeItem(it);renderKeys();
+ for(const[id,o,sd]of m.doors||[])setDoorOpen(id,o,true,sd);for(const[id,on]of m.radios||[])setRadio(id,on);
+ if(m.door&&!door)spawnDoor(m.door)}
+function removeItem(itId){taken.add(itId);for(const ch of chunks.values())for(let i=ch.items.length-1;i>=0;i--){const o=ch.items[i];if(o.it.id===itId){o.mesh.parent?.remove(o.mesh);ch.items.splice(i,1)}}}
+function setDoorOpen(id,open,instant,side){const st=doorState(id);if(!st.has||st.broken)return;
+ if(open){if(st.o<0.05&&side)st.side=side;st.tgt=1;st.spd=2.2}else{st.tgt=0;st.spd=2.6}
+ if(instant){st.o=st.tgt;placeDoorMesh(id)}else animDoors.add(id)}
+function setRadio(id,on){radioState.set(id,on);for(const ch of chunks.values())for(const o of ch.inter)if(o.kind==='radio'&&o.id===id)o.mesh.userData.led.material.color.setHex(on?0xffb347:0x333333)}
+function nameOf(id){return NET.peers.get(id)?.name||'Someone'}
+function onNet(m){const from=m.f;const p=NET.peers.get(from);
+ switch(m.t){
+ case'p':if(!p)return;if(p.lv!==m.lv&&p.obj){p.x=p.tx=m.x;p.z=p.tz=m.z}p.tx=m.x;p.tz=m.z;p.ty=m.y;p.tyaw=m.yw;p.tpitch=m.pt;p.cr=!!m.cr;p.fl=!!m.fl;p.area=m.a;p.dead=!!m.d;p.lv=m.lv;if(!p.seen){p.x=m.x;p.z=m.z;p.yaw=m.yw;p.pitch=m.pt}p.seen=performance.now();if(m.w)p.obj.userData.wave=Math.max(p.obj.userData.wave,0.3);break;
+ case'hi':case'req':if(NET.started&&(m.t==='req'||NET.isHost()))NET.send(Object.assign(netSnap(),{to:from}));else if(!NET.started&&NET.isHost())renderRoom();break;
+ case's':if(m.to!==NET.id)return;if(m.started&&!NET.started){NET.pending=m;beginCoop(m.seed,m.lv,m)}else if(NET.started)applySnap(m);break;
+ case'go':if(!NET.started)beginCoop(m.seed,m.lv||0,null);break;
+ case'k':if(m.lv!==LEVEL)return;removeItem(m.it);if(m.key&&!keysGot.has(m.it)){keysGot.add(m.it);renderKeys();A.chime();const left=LV.keys-keysGot.size;toast(`<b>${esc(nameOf(from))}</b> found a key. ${left>0?left+' to go.':'That was the last one.'}`)}break;
+ case'd':if(m.lv!==LEVEL)return;setDoorOpen(m.id,m.o,false,m.s);{const i=doorInfo(m.id);if(Math.hypot(P1.x-i.cx,P1.z-i.cz)<14)(m.o?A.doorCreak(i.cx,i.cz):0)}break;
+ case'r':if(m.lv!==LEVEL)return;setRadio(m.id,m.on);break;
+ case'fd':if(m.lv!==LEVEL||door)return;spawnDoor(m);break;
+ case'lv':if(m.lv<=LEVEL||state==='levelend')return;toast(`<b>${esc(nameOf(from))}</b> found the front door.`);if(state==='dead')revive();if(hidden)exitHide();finishLevel(true);break;
+ case'c':chatLine(nameOf(from),m.msg,NET.colorOf(from));break;
+ case'x':if(m.lv===LEVEL)chatLine('',`${nameOf(from)} was killed by ${m.who}.`,'#b23a2c');break;
+ case'rv':if(m.lv===LEVEL)chatLine('',`${nameOf(from)} was restored from backup.`,'#6c665c');break}}
+// helpers called from game code
+function netKey(it){if(NET.on&&NET.started)NET.send({t:'k',lv:LEVEL,it:it.id,key:it.type==='key'})}
+function netDoor(id){if(!NET.on||!NET.started)return;const st=doorState(id);NET.send({t:'d',lv:LEVEL,id,o:st.tgt>0.5?1:0,s:st.side})}
+function netRadio(id,on){if(NET.on&&NET.started)NET.send({t:'r',lv:LEVEL,id,on})}
+function netFrontDoor(){if(NET.on&&NET.started&&door)NET.send({t:'fd',lv:LEVEL,x:door.x,z:door.z,ry:door.group.rotation.y})}
+function netDeath(who){if(NET.on&&NET.started){NET.send({t:'x',lv:LEVEL,who});NET.sendT=0;netTick(1)}}
+
+// co-op game flow
+function beginCoop(seed,lv,snap){NET.started=true;$('seedIn').value=seed;$('room').classList.add('hide');$('coop').classList.add('hide');
+ A.init();A.resume();$('title').classList.add('hide');$('hud').classList.remove('hide');if(isTouch)$('mobile').classList.remove('hide');
+ notesFound=new Set(load('oh_save',{})?.notes||[]);totalDist=0;battery=1;setupWorld(lv);
+ if(snap){applySnap(snap);if(snap.pos){P1.set(snap.pos[0],0,snap.pos[1])}}
+ state='play';if(!isTouch)lock();NET.retrack();renderTeam();
+ toast(NET.members.length>1?'<b>HEARTH has merged your homes.</b> Your nightmares are still your own.':'<b>Co-op house ready.</b> Friends can join with code '+NET.code+'.')}
+function coopRespawn(){const mates=teammates().filter(p=>!p.dead&&!p.area);revive();resetScare();resetDaniel();resetClive();resetHoward();resetSimon();resetGerald();resetArthur();if(hidden)exitHide();
+ if(mates.length){const p=mates[0];P1.set(p.x,0,p.z);yaw=p.yaw}else resetPlayer();vel.set(0,0,0);py=0;vy=0;state='play';if(!isTouch)lock();NET.send({t:'rv',lv:LEVEL})}
+const chatQ=[];
+function chatLine(name,msg,col){const d=document.createElement('div');d.className='cl';d.innerHTML=(name?`<b style="color:${col}">${esc(name)}</b> `:'')+`<span${name?'':` style="color:${col};font-style:italic"`}>${esc(msg)}</span>`;$('chatlog').appendChild(d);while($('chatlog').children.length>7)$('chatlog').firstChild.remove();setTimeout(()=>d.classList.add('old'),9000)}
+function openChat(){if(!NET.on||!NET.started)return;state='chat';document.exitPointerLock?.();const c=$('chatin');c.classList.remove('hide');c.value='';setTimeout(()=>c.focus(),0)}
+function closeChat(send){const c=$('chatin');const v=c.value.trim().slice(0,140);c.classList.add('hide');c.blur();if(send&&v){NET.send({t:'c',msg:v});chatLine(avCfg.name,v,NET.colorOf(NET.id))}if(state==='chat'){state='play';if(!isTouch)lock()}}
+function renderTeam(){const el=$('team');if(!NET.on||!NET.started){el.classList.add('hide');return}el.classList.remove('hide');
+ let h=`<div class="th">CO-OP · ${esc(NET.code)}</div>`;for(const m of NET.members){const p=NET.peers.get(m.id),mine=m.id===NET.id;let st='';
+  if(mine)st='you';else if(!p||performance.now()-p.seen>6000)st='…';else if(p.lv!==LEVEL)st=p.lv>LEVEL?'next house':'behind';else if(p.dead)st='dead';else st=Math.round(Math.hypot(p.x-P1.x,p.z-P1.z))+' m';
+  h+=`<div class="tm"><i style="background:${NET.colorOf(m.id)}"></i>${esc(m.name)}${m.id===NET.members[0]?.id?' <small>host</small>':''}<span>${st}</span></div>`}el.innerHTML=h}
+
+// lobby UI
+function coopMsg(t,err){const e=$('coopMsg');e.textContent=t||'';e.style.color=err?'#b23a2c':'#6c665c';const r=$('roomMsg');if(r)r.textContent=err?t:''}
+function showCoop(){$('title').classList.add('hide');$('room').classList.add('hide');$('coop').classList.remove('hide');$('coopName').value=avCfg.name;coopMsg('');renderOpenGames();NET.lobbySub().then(()=>renderOpenGames())}
+function showRoom(){$('coop').classList.add('hide');$('room').classList.remove('hide');renderRoom()}
+function renderRoom(){if(!NET.on)return;$('roomCode').textContent=NET.code;const host=NET.isHost();
+ $('roomList').innerHTML=NET.members.map(m=>`<div class="tm"><i style="background:${NET.colorOf(m.id)}"></i>${esc(m.name)}${m.id===NET.id?' <small>you</small>':''}${m.id===NET.members[0]?.id?' <small>host</small>':''}</div>`).join('')||'<div class="tm">Connecting…</div>';
+ $('bRoomStart').classList.toggle('hide',!host);$('roomWait').classList.toggle('hide',host);$('roomPub').textContent=NET.pub?'Listed publicly — anyone can join from Open games.':'Private — share the code with your friends.'}
+function renderOpenGames(){const el=$('openGames');if(!el)return;const ps=NET.lobby?.presenceState?.()||{},rows=[];for(const k in ps){const m=ps[k][0];if(m&&m.code&&m.code!==NET.code&&m.n<4)rows.push(m)}
+ el.innerHTML=rows.length?'':'<div class="none">No open games right now. Host one!</div>';
+ for(const m of rows){const b=document.createElement('button');b.className='game';b.innerHTML=`<b>${esc(m.name)}'s house</b><span>${m.n}/4 · ${m.started?'House '+((m.lv|0)+1):'In lobby'}</span>`;b.onclick=()=>coopJoin(m.code);el.appendChild(b)}}
+async function coopHost(){avCfg.name=avSanitize({name:$('coopName').value}).name;store('dh_avatar',avCfg);NET.pub=$('coopPublic').checked;const code=roomCode();if(await NET.join(code,true)){$('seedIn').value=$('seedIn').value||randSeedStr()}}
+async function coopJoin(code){avCfg.name=avSanitize({name:$('coopName').value}).name;store('dh_avatar',avCfg);code=String(code||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,5);if(code.length!==5){coopMsg('Room codes are 5 letters.',true);return}NET.pub=false;await NET.join(code,false)}
+function coopStart(){if(!NET.isHost())return;const seed=$('seedIn').value.trim()||randSeedStr();NET.send({t:'go',seed,lv:0});beginCoop(seed,0,null)}
+
 function setupWorld(level,fromSave){SEED=seedFromStr($('seedIn').value.trim()||'house');startLevel(level,fromSave)}
 function begin(fromSave){A.init();A.resume();$('title').classList.add('hide');$('hud').classList.remove('hide');if(isTouch)$('mobile').classList.remove('hide');
  if(fromSave){notesFound=new Set(fromSave.notes||[]);totalDist=fromSave.totalDist||0;battery=fromSave.battery??1;setupWorld(fromSave.level||0,fromSave)}else{notesFound=new Set(load('oh_save',{})?.notes||[]);totalDist=0;battery=1;setupWorld(0)}
  state='play';if(!isTouch)lock()}
 $('bStart').onclick=()=>begin(null);
 $('bCont').onclick=()=>begin(load('oh_save',null));
+$('bAvatar').onclick=()=>{CUS.from='title';$('title').classList.add('hide');openCustom()};
+$('cusDone').onclick=()=>{closeCustom();if(CUS.from==='coop')showCoop();else $('title').classList.remove('hide')};
+$('cusRand').onclick=()=>{avCfg=Object.assign(avRandom(),{name:$('cusName').value||avCfg.name});cusChanged()};
+$('cusWalk').onclick=()=>{CUS.walk=!CUS.walk;$('cusWalk').textContent=CUS.walk?'Stand':'Walk'};
+$('cusName').addEventListener('input',()=>{avCfg.name=avSanitize({name:$('cusName').value}).name;store('dh_avatar',avCfg)});
+$('bCoop').onclick=()=>{A.init();A.resume();showCoop()};
+$('coopAv').onclick=()=>{avCfg.name=avSanitize({name:$('coopName').value}).name;CUS.from='coop';$('coop').classList.add('hide');openCustom()};
+$('coopBack').onclick=()=>{$('coop').classList.add('hide');$('title').classList.remove('hide')};
+$('coopHostB').onclick=coopHost;$('coopJoinB').onclick=()=>coopJoin($('coopCode').value);
+$('coopCode').addEventListener('keydown',e=>{if(e.code==='Enter')coopJoin($('coopCode').value)});
+$('bRoomStart').onclick=coopStart;$('bRoomLeave').onclick=()=>NET.leave();
+$('bRoomCopy').onclick=()=>{try{navigator.clipboard.writeText(NET.code);$('bRoomCopy').textContent='Copied!';setTimeout(()=>$('bRoomCopy').textContent='Copy code',1500)}catch(e){}};
 $('bResume').onclick=resume;
 $('bNew').onclick=()=>{$('seedIn').value=randSeedStr();$('pause').classList.add('hide');battery=1;setupWorld(0);state='play';if(!isTouch)lock()};
-$('bQuit').onclick=()=>{saveGame();resetScare();resetDaniel();resetClive();resetHoward();resetSimon();resetGerald();$('pause').classList.add('hide');$('hud').classList.add('hide');$('mobile').classList.add('hide');$('title').classList.remove('hide');$('bCont').classList.remove('hide');state='title'};
-$('bRetry').onclick=()=>{revive();startLevel(LEVEL);state='play';if(!isTouch)lock()};
-$('bDeadTitle').onclick=()=>{revive();resetScare();resetDaniel();resetClive();resetHoward();resetSimon();resetGerald();startLevel(LEVEL);$('hud').classList.add('hide');$('mobile').classList.add('hide');$('title').classList.remove('hide');$('bCont').classList.remove('hide');state='title'};
-$('bNext').onclick=()=>{$('sold').classList.add('hide');startLevel(LEVEL+1);state='play';if(!isTouch)lock()};
+$('bQuit').onclick=()=>{const wasNet=NET.on;if(wasNet)NET.leave(true);else saveGame();resetScare();resetDaniel();resetClive();resetHoward();resetSimon();resetGerald();resetArthur();$('pause').classList.add('hide');$('hud').classList.add('hide');$('mobile').classList.add('hide');$('title').classList.remove('hide');$('bCont').classList.remove('hide');state='title'};
+$('bRetry').dataset.t=$('bRetry').textContent;$('bDeadTitle').dataset.t=$('bDeadTitle').textContent;
+$('bRetry').onclick=()=>{if(NET.on&&NET.started){coopRespawn();return}revive();startLevel(LEVEL);state='play';if(!isTouch)lock()};
+$('bDeadTitle').onclick=()=>{if(NET.on){NET.leave(true)}revive();resetScare();resetDaniel();resetClive();resetHoward();resetSimon();resetGerald();resetArthur();startLevel(LEVEL);$('hud').classList.add('hide');$('mobile').classList.add('hide');$('title').classList.remove('hide');$('bCont').classList.remove('hide');state='title'};
+$('bNext').onclick=()=>{if(state!=='levelend')return;$('sold').classList.add('hide');startLevel(LEVEL+1);state='play';if(!isTouch)lock();if(NET.on&&NET.started){NET.send({t:'req'});NET.retrack()}};
 const bindRange=(id,key,fn)=>{const el=$(id);if(el.type==='checkbox'){el.checked=settings[key];el.onchange=()=>{settings[key]=el.checked;store('oh_settings',settings)}}else{el.value=settings[key];el.oninput=()=>{settings[key]=parseFloat(el.value);store('oh_settings',settings);fn&&fn()}}};
 bindRange('sSens','sens');bindRange('sFov','fov',()=>{camera.fov=settings.fov;camera.updateProjectionMatrix()});bindRange('sVol','vol',()=>A.setVol(settings.vol));bindRange('sMus','music');bindRange('sQ','q',resize);bindRange('sBob','bob');bindRange('sScare','scares');
 
@@ -1464,6 +1823,7 @@ function drawMap(){if(mapMode===0||frame%3)return;const c=$('map'),W=c.width,ctx
  ctx.stroke();
  if(door){let dx=ox+door.x/S*cs,dz=oz+door.z/S*cs;const vx=dx-W/2,vz=dz-W/2,l=Math.hypot(vx,vz),mx=W/2-10;if(l>mx){dx=W/2+vx/l*mx;dz=W/2+vz/l*mx}ctx.fillStyle='#b23a2c';ctx.beginPath();ctx.arc(dx,dz,5,0,TAU);ctx.fill()}
  if(D.active&&D.phase==='chase'){const dx=ox+D.x/S*cs,dz=oz+D.z/S*cs;ctx.fillStyle=`rgba(200,30,20,${0.6+Math.sin(performance.now()/90)*0.4})`;ctx.beginPath();ctx.arc(dx,dz,5,0,TAU);ctx.fill()}
+ if(NET.on)for(const p of NET.peers.values()){if(p.lv!==LEVEL||p.area||performance.now()-p.seen>6000)continue;let dx=ox+p.x/S*cs,dz=oz+p.z/S*cs;const vx=dx-W/2,vz=dz-W/2,l=Math.hypot(vx,vz),mx=W/2-8;if(l>mx){dx=W/2+vx/l*mx;dz=W/2+vz/l*mx}ctx.fillStyle=NET.colorOf(p.id);ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(dx,dz,4.5,0,TAU);ctx.fill();ctx.stroke()}
  ctx.translate(W/2,W/2);ctx.rotate(Math.atan2(-Math.cos(yaw),-Math.sin(yaw)));ctx.fillStyle='#b23a2c';ctx.beginPath();ctx.moveTo(7,0);ctx.lineTo(-5,5);ctx.lineTo(-2,0);ctx.lineTo(-5,-5);ctx.closePath();ctx.fill();ctx.restore()}
 
 // ---------- loop ----------
@@ -1483,7 +1843,7 @@ function update(dt,t){
  eye+=((crouch?1.05:1.65)-eye)*Math.min(1,dt*10);
  const hs=Math.hypot(vel.x,vel.z);bobT+=hs*dt*2.1;const bob=settings.bob?Math.sin(bobT*2)*0.045*Math.min(1,hs/3):0,bobx=settings.bob?Math.cos(bobT)*0.025*Math.min(1,hs/3):0;
  const ph=Math.floor(bobT/Math.PI);if(ph!==lastStepPh&&hs>0.6&&onGround){lastStepPh=ph;A.step(CL.inside||SM.inside?'oak':FLOOR[themeAt(Math.floor(P1.x/S),Math.floor(P1.z/S))],crouch)}
- if(hidden)camera.position.copy(hidden.o.cam);else camera.position.set(P1.x+Math.cos(yaw)*bobx,(CL.inside?CE.y:SM.inside?SME.y:0)+py+eye+bob,P1.z-Math.sin(yaw)*bobx);if(D.shakeT>0){D.shakeT-=dt;camera.position.x+=(Math.random()-.5)*0.06;camera.position.y+=(Math.random()-.5)*0.06}camera.rotation.set(pitch,yaw,0);if(D.active&&D.shake>0){const a=D.shake*0.045;camera.position.x+=(Math.random()-.5)*a;camera.position.y+=(Math.random()-.5)*a;camera.rotation.z=(Math.random()-.5)*a*0.6}
+ if(hidden)camera.position.copy(hidden.o.cam);else camera.position.set(P1.x+Math.cos(yaw)*bobx,(CL.inside?CE.y:SM.inside?SME.y:0)+py+eye+bob,P1.z-Math.sin(yaw)*bobx);if(D.shakeT>0){D.shakeT-=dt;camera.position.x+=(Math.random()-.5)*0.06;camera.position.y+=(Math.random()-.5)*0.06}{me.userData.flash=false;animAvatar(me,Math.hypot(vel.x,vel.z),dt,crouch,pitch,t)}camera.rotation.set(pitch,yaw,0);if(D.active&&D.shake>0){const a=D.shake*0.045;camera.position.x+=(Math.random()-.5)*a;camera.position.y+=(Math.random()-.5)*a;camera.rotation.z=(Math.random()-.5)*a*0.6}
  const tf=settings.fov+(running&&hs>4?6:0);if(Math.abs(camera.fov-tf)>0.05){camera.fov+=(tf-camera.fov)*Math.min(1,dt*6);camera.updateProjectionMatrix()}
  // visited
  {const cgx=Math.floor(P1.x/S),cgz=Math.floor(P1.z/S);if(window.__pc&&(window.__pc[0]!==cgx||window.__pc[1]!==cgz)&&Math.abs(window.__pc[0]-cgx)+Math.abs(window.__pc[1]-cgz)===1){const id=edgeId(window.__pc[0],window.__pc[1],cgx,cgz),st=DOORS.get(id);if(st&&st.has&&!st.broken&&st.o>0.5&&!SLAM.pending&&settings.scares&&Math.random()<0.3)SLAM.pending={id,t:1.2+Math.random()*2.5}}window.__pc=[cgx,cgz]}
@@ -1494,7 +1854,7 @@ function update(dt,t){
  const fl=flashOn?(battery<0.15?(Math.random()<0.08?0.2:1):1)*14:0;flash.intensity+=(fl-flash.intensity)*Math.min(1,dt*20);
  // items
  for(const ch of chunks.values()){for(let i=ch.items.length-1;i>=0;i--){const o=ch.items[i];o.mesh.rotation.y=t*1.6;o.mesh.position.y=o.base+Math.sin(t*2+o.base*9+o.mesh.position.x)*0.06;
-  const dx=o.mesh.position.x-P1.x,dz=o.mesh.position.z-P1.z;if(dx*dx+dz*dz<1.3*1.3){taken.add(o.it.id);o.mesh.parent.remove(o.mesh);ch.items.splice(i,1);
+  const dx=o.mesh.position.x-P1.x,dz=o.mesh.position.z-P1.z;if(dx*dx+dz*dz<1.3*1.3){taken.add(o.it.id);o.mesh.parent.remove(o.mesh);ch.items.splice(i,1);netKey(o.it);
    if(o.it.type==='key'){keysGot.add(o.it.id);A.chime();renderKeys();const left=LV.keys-keysGot.size;if(left>0)toast(`<b>House key found.</b> ${left} to go.`);else if(!door)spawnDoor();achieve('key1','First key')}
    else{battery=Math.min(1,battery+0.5);A.blip();toast('<b>Batteries.</b> Flashlight recharged.')}saveGame()}}}
  for(const ch of chunks.values())for(const o of ch.inter)if(o.kind==='note'){o.mesh.rotation.y=t*0.7;o.mesh.position.y=o.base+Math.sin(t*1.3+o.base)*0.05}
@@ -1506,7 +1866,7 @@ function update(dt,t){
  // music from radios
  let mv=0;if(SC.phase!=='idle')mv=0;else for(const ch of chunks.values())for(const o of ch.inter)if(o.kind==='radio'&&radioState.get(o.id)){const d=o.mesh.position.distanceTo(camera.position);mv=Math.max(mv,1/(1+(d/3.2)**2))}
  if(A.ctx){A.musicOn=mv>0.01;A.musicOut.gain.setTargetAtTime(mv*settings.music*0.9,A.ctx.currentTime,0.15);A.mfilt.frequency.setTargetAtTime(500+mv*mv*6500,A.ctx.currentTime,0.2);A.hum.gain.setTargetAtTime((LV.night?0.03:0.05)*(1-mv*0.6),A.ctx.currentTime,0.3)}
- updateDoors(dt);updateClive(dt,t);updateSimon(dt,t);if(!CL.inside&&!SM.inside){updateScare(dt,t);updateDaniel(dt,t);updateMirrorMan(dt);updateHoward(dt,t);updateGerald(dt,t);updateDreadSounds(dt);updateAmbientScreams(dt)}updateHeartbeat(dt);
+ updateDoors(dt);updateClive(dt,t);updateSimon(dt,t);if(!CL.inside&&!SM.inside){updateScare(dt,t);updateDaniel(dt,t);updateMirrorMan(dt);updateHoward(dt,t);updateGerald(dt,t);updateArthur(dt,t);updateDreadSounds(dt);updateAmbientScreams(dt)}updateHeartbeat(dt);
  // door
  if(door){const dx=door.x-P1.x,dz=door.z-P1.z,d=Math.hypot(dx,dz);$('cdist').textContent=Math.round(d)+' m';const rel=Math.atan2(-dx,-dz)-yaw;$('arrow').style.transform=`rotate(${-rel}rad)`;doorLight.intensity=5+Math.sin(t*2)*0.8;if(d<0.9)finishLevel()}
  // chunks
@@ -1533,7 +1893,8 @@ function loop(now){requestAnimationFrame(loop);const rawMs=now-last;const dt=Mat
  else if(state==='title'){yaw+=dt*0.08;camera.position.set(P1.x,1.6,P1.z);camera.rotation.set(-0.05,yaw,0);if(frame%15===0)updateChunks(false);stepBuild(5)}
  updateLights(dt,t);if(state==='play'||state==='title')drawMap();
  if(state==='play'||state==='title'){renderMirror();renderPortal()}if(!CL.inside&&!CL.door&&!SM.inside)corrLight.intensity=0;
- renderer.render(scene,camera)}
+ updatePeers(dt,t);netTick(dt);if(NET.on&&frame%20===0)renderTeam();
+ renderer.render(scene,camera);cusFrame(dt,t)}
 
 initTemplates();resize();
 SEED=seedFromStr($('seedIn').value);LEVEL=saved?.level||0;LV=levelCfg(LEVEL);SALT=(SEED^Math.imul(LEVEL+1,0x2f6b9a1))|0;computeStyle();applyPalette();buildCorridor();resetPlayer();updateChunks(true);
