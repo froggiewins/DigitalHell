@@ -11,3 +11,9 @@ Play it by opening `index.html` in a browser, or host it with GitHub Pages (Sett
 **Controls:** WASD to walk · Shift to run · Z to crouch · Space to hop · F for flashlight · E to open doors, read notes and hide · M for the map · J for the journal · P for photo mode · G to wave · T to chat (co-op) · Esc to pause.
 
 ⚠ Contains jump scares, flashing and loud sounds.
+
+**Story:** Ten houses, ending with *Vacancy 2*. Get through its front door to find out what HEARTH really is. After the ending you can keep exploring endless unlisted houses.
+
+**Co-op deaths:** a teammate can revive you by holding E next to your body for 3 seconds, or you can restore from backup by spending one of the team's keys. If everyone else leaves, the game switches to single player.
+
+Made by Xavier Grant.
